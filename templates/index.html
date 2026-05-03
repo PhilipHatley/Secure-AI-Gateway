@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure AI Gateway</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #18212f;
+      --muted: #536174;
+      --line: #d6dce5;
+      --surface: #f7f9fc;
+      --panel: #ffffff;
+      --green: #147a3d;
+      --green-bg: #e8f6ee;
+      --yellow: #946200;
+      --yellow-bg: #fff4cf;
+      --red: #ad2a2a;
+      --red-bg: #fde8e8;
+      --blue: #2454a6;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--surface);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0;
+    }
+
+    main {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 700;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    form {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 170px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px;
+      color: var(--ink);
+      font: 16px/1.45 Arial, Helvetica, sans-serif;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--blue);
+      color: white;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.72;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      background: var(--panel);
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result.block {
+      border-color: var(--red);
+      background: var(--red-bg);
+    }
+
+    .result.mask {
+      border-color: var(--yellow);
+      background: var(--yellow-bg);
+    }
+
+    .result.allow {
+      border-color: var(--green);
+      background: var(--green-bg);
+    }
+
+    .result h2 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .result p {
+      margin: 8px 0;
+      line-height: 1.45;
+    }
+
+    .entity-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .entity {
+      border: 1px solid rgba(0, 0, 0, 0.14);
+      border-radius: 999px;
+      padding: 5px 10px;
+      background: rgba(255, 255, 255, 0.62);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    pre {
+      overflow-x: auto;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.7);
+      padding: 12px;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 640px) {
+      main {
+        width: min(100% - 20px, 980px);
+        padding: 18px 0;
+      }
+
+      header {
+        display: block;
+      }
+
+      h1 {
+        font-size: 24px;
+        margin-bottom: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Secure AI Gateway</h1>
+      <div class="status" id="status">Gateway status hentes...</div>
+    </header>
+
+    <form id="prompt-form">
+      <label for="prompt">Prompt</label>
+      <textarea id="prompt" name="prompt" required>Hvad er forskellen mellem DORA og NIS2 regulering for finansielle institutioner?</textarea>
+      <div class="actions">
+        <button type="submit" id="submit">Send prompt</button>
+      </div>
+    </form>
+
+    <section class="result" id="result" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const form = document.querySelector("#prompt-form");
+    const promptInput = document.querySelector("#prompt");
+    const result = document.querySelector("#result");
+    const submit = document.querySelector("#submit");
+    const status = document.querySelector("#status");
+
+    async function loadStatus() {
+      try {
+        const response = await fetch("/health");
+        const body = await response.json();
+        status.textContent = `${body.status.toUpperCase()} · ${body.target_api} · demo=${body.demo_mode}`;
+      } catch {
+        status.textContent = "Gateway ikke tilgængelig";
+      }
+    }
+
+    function entityBadges(entities) {
+      if (!entities || entities.length === 0) {
+        return "";
+      }
+      const badges = entities.map((entity) => `<span class="entity">${entity.label} · ${entity.stage}</span>`);
+      return `<div class="entity-list">${badges.join("")}</div>`;
+    }
+
+    function renderBlocked(body) {
+      result.className = "result show block";
+      result.innerHTML = `
+        <h2>BLOCK</h2>
+        <p>${body.message}</p>
+        <p>${body.policy_reference}</p>
+        <p>${body.regulatory_basis}</p>
+        <p>${body.action_required}</p>
+        <p><strong>Request ID:</strong> ${body.request_id}</p>
+      `;
+    }
+
+    function renderAllowed(body) {
+      const gateway = body.gateway || {};
+      result.className = "result show allow";
+      result.innerHTML = `
+        <h2>ALLOW</h2>
+        <p>${gateway.policy_reason || "Prompten blev videresendt."}</p>
+        <pre>${JSON.stringify(body.choices || [], null, 2)}</pre>
+      `;
+    }
+
+    function renderMasked(body) {
+      const gateway = body.gateway || {};
+      result.className = "result show mask";
+      result.innerHTML = `
+        <h2>MASK_AND_FORWARD</h2>
+        <p>${gateway.policy_reason || "Følsomme data blev maskeret."}</p>
+        ${entityBadges(gateway.detected_entities)}
+        <pre>${JSON.stringify(body.choices || [], null, 2)}</pre>
+      `;
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submit.disabled = true;
+      result.className = "result show";
+      result.textContent = "Behandler prompt...";
+
+      const payload = {
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: promptInput.value }]
+      };
+
+      try {
+        const response = await fetch("/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const body = await response.json();
+        if (response.status === 403) {
+          renderBlocked(body);
+        } else if (body.gateway?.policy_action === "MASK_AND_FORWARD") {
+          renderMasked(body);
+        } else {
+          renderAllowed(body);
+        }
+      } catch (error) {
+        result.className = "result show block";
+        result.textContent = `Fejl: ${error.message}`;
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    loadStatus();
+  </script>
+</body>
+</html>
+
