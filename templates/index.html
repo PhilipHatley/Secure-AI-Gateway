@@ -7,18 +7,22 @@
   <style>
     :root {
       color-scheme: light;
-      --ink: #18212f;
-      --muted: #536174;
-      --line: #d6dce5;
-      --surface: #f7f9fc;
+      --bg: #eef2f7;
       --panel: #ffffff;
-      --green: #147a3d;
-      --green-bg: #e8f6ee;
-      --yellow: #946200;
-      --yellow-bg: #fff4cf;
-      --red: #ad2a2a;
-      --red-bg: #fde8e8;
+      --panel-soft: #f8fafc;
+      --ink: #101827;
+      --muted: #5f6c7b;
+      --line: #d7dee8;
       --blue: #2454a6;
+      --blue-dark: #193b75;
+      --violet: #5d4aa8;
+      --green: #177245;
+      --green-soft: #e8f7ef;
+      --amber: #946200;
+      --amber-soft: #fff4d6;
+      --red: #b4232f;
+      --red-soft: #fde8ea;
+      --shadow: 0 18px 44px rgba(16, 24, 39, 0.10);
     }
 
     * {
@@ -28,181 +32,494 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: var(--surface);
+      background: var(--bg);
       color: var(--ink);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Inter, Arial, Helvetica, sans-serif;
       letter-spacing: 0;
     }
 
-    main {
-      width: min(980px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 32px 0;
+    button,
+    textarea {
+      font: inherit;
     }
 
-    header {
+    .app {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 36px;
+    }
+
+    .topbar {
       display: flex;
-      align-items: baseline;
+      align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 20px;
+      gap: 20px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .mark {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      border-radius: 8px;
+      background: var(--ink);
+      color: white;
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
     }
 
     h1 {
-      margin: 0;
-      font-size: 30px;
-      font-weight: 700;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 14px;
     }
 
     .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 0 12px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
       white-space: nowrap;
     }
 
-    form {
-      background: var(--panel);
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    .status.ok .status-dot {
+      background: var(--green);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .panel {
       border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 18px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .composer {
+      padding: 20px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .section-head h2,
+    .result h2 {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
     }
 
     label {
       display: block;
       margin-bottom: 8px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
+      text-transform: uppercase;
     }
 
     textarea {
       width: 100%;
-      min-height: 170px;
+      min-height: 220px;
       resize: vertical;
       border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 14px;
-      color: var(--ink);
-      font: 16px/1.45 Arial, Helvetica, sans-serif;
-    }
-
-    .actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 12px;
-    }
-
-    button {
-      min-height: 42px;
-      border: 0;
-      border-radius: 6px;
-      background: var(--blue);
-      color: white;
-      padding: 0 18px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    button:disabled {
-      cursor: wait;
-      opacity: 0.72;
-    }
-
-    .result {
-      display: none;
-      margin-top: 18px;
-      border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 18px;
-      background: var(--panel);
+      outline: none;
+      background: #fbfdff;
+      padding: 16px;
+      color: var(--ink);
+      font-size: 16px;
+      line-height: 1.5;
+      transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
     }
 
-    .result.show {
-      display: block;
+    textarea:focus {
+      border-color: var(--blue);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(36, 84, 166, 0.16);
     }
 
-    .result.block {
-      border-color: var(--red);
-      background: var(--red-bg);
-    }
-
-    .result.mask {
-      border-color: var(--yellow);
-      background: var(--yellow-bg);
-    }
-
-    .result.allow {
-      border-color: var(--green);
-      background: var(--green-bg);
-    }
-
-    .result h2 {
-      margin: 0 0 10px;
-      font-size: 20px;
-    }
-
-    .result p {
-      margin: 8px 0;
-      line-height: 1.45;
-    }
-
-    .entity-list {
+    .prompt-tools {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 12px;
     }
 
-    .entity {
-      border: 1px solid rgba(0, 0, 0, 0.14);
-      border-radius: 999px;
-      padding: 5px 10px;
-      background: rgba(255, 255, 255, 0.62);
+    .sample {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+      color: var(--ink);
+      padding: 0 12px;
       font-size: 13px;
       font-weight: 700;
+      cursor: pointer;
     }
 
-    pre {
-      overflow-x: auto;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.7);
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .primary {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 140ms ease, background 140ms ease;
+    }
+
+    .primary:hover {
+      background: var(--blue-dark);
+      transform: translateY(-1px);
+    }
+
+    .primary:disabled {
+      cursor: wait;
+      opacity: 0.72;
+      transform: none;
+    }
+
+    .rail {
+      display: grid;
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 16px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      margin-top: 8px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .metric-value.small {
+      font-size: 15px;
+      overflow-wrap: anywhere;
+    }
+
+    .audit-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .audit-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+      padding: 10px;
+      font-size: 13px;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding: 18px 20px;
+    }
+
+    .result-body {
+      padding: 18px 20px 20px;
+    }
+
+    .result.allow .result-head {
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .result.mask .result-head {
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .result.block .result-head {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .summary-cell {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
       padding: 12px;
-      white-space: pre-wrap;
+      min-width: 0;
+    }
+
+    .summary-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .summary-value {
+      margin-top: 6px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .message {
+      color: var(--ink);
+      line-height: 1.55;
+    }
+
+    .entity-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0 0;
+    }
+
+    .entity {
+      border: 1px solid rgba(16, 24, 39, 0.16);
+      border-radius: 999px;
+      background: white;
+      color: var(--ink);
+      padding: 6px 10px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .assistant-box {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 14px;
+      line-height: 1.55;
+    }
+
+    .policy-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .policy-item {
+      border-left: 3px solid currentColor;
+      padding-left: 10px;
+      line-height: 1.45;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .rail {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 640px) {
-      main {
-        width: min(100% - 20px, 980px);
+      .app {
+        width: min(100% - 20px, 1160px);
         padding: 18px 0;
       }
 
-      header {
-        display: block;
+      .topbar,
+      .section-head,
+      .actions,
+      .result-head {
+        align-items: stretch;
+        flex-direction: column;
       }
 
       h1 {
         font-size: 24px;
-        margin-bottom: 6px;
+      }
+
+      .status,
+      .primary {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .rail,
+      .summary-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <main>
-    <header>
-      <h1>Secure AI Gateway</h1>
-      <div class="status" id="status">Gateway status hentes...</div>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">S</div>
+        <div>
+          <h1>Secure AI Gateway</h1>
+          <p class="subtitle">DLP proxy for eksterne LLM-tjenester</p>
+        </div>
+      </div>
+      <div class="status" id="status">
+        <span class="status-dot"></span>
+        <span>Gateway status hentes...</span>
+      </div>
     </header>
 
-    <form id="prompt-form">
-      <label for="prompt">Prompt</label>
-      <textarea id="prompt" name="prompt" required>Hvad er forskellen mellem DORA og NIS2 regulering for finansielle institutioner?</textarea>
-      <div class="actions">
-        <button type="submit" id="submit">Send prompt</button>
-      </div>
-    </form>
+    <div class="layout">
+      <section class="panel composer">
+        <div class="section-head">
+          <h2>Prompt</h2>
+          <span class="counter" id="counter">0 tegn</span>
+        </div>
+
+        <form id="prompt-form">
+          <label for="prompt">Input</label>
+          <textarea id="prompt" name="prompt" required>Hvad er forskellen mellem DORA og NIS2 regulering for finansielle institutioner?</textarea>
+
+          <div class="prompt-tools">
+            <button class="sample" type="button" data-sample="cpr">CPR-test</button>
+            <button class="sample" type="button" data-sample="business">Forretningsdata</button>
+            <button class="sample" type="button" data-sample="neutral">Neutral</button>
+          </div>
+
+          <div class="actions">
+            <span class="hint">Model: gpt-4o-mini</span>
+            <button class="primary" type="submit" id="submit">Send prompt</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="rail">
+        <section class="panel metric">
+          <div class="metric-label">Target</div>
+          <div class="metric-value small" id="target">mock</div>
+        </section>
+
+        <section class="panel metric">
+          <div class="metric-label">Mode</div>
+          <div class="metric-value small" id="mode">demo</div>
+        </section>
+
+        <section class="panel metric">
+          <div class="metric-label">Seneste audit</div>
+          <div class="audit-list" id="audit-list">
+            <div class="empty">Ingen audit entries endnu.</div>
+          </div>
+        </section>
+      </aside>
+    </div>
 
     <section class="result" id="result" aria-live="polite"></section>
   </main>
@@ -213,34 +530,111 @@
     const result = document.querySelector("#result");
     const submit = document.querySelector("#submit");
     const status = document.querySelector("#status");
+    const target = document.querySelector("#target");
+    const mode = document.querySelector("#mode");
+    const counter = document.querySelector("#counter");
+    const auditList = document.querySelector("#audit-list");
+
+    const samples = {
+      cpr: "Kan du hjælpe mig med at vurdere kreditrisikoen for kunden Lars Jensen, CPR 150892-1234, der søger et lån på 500.000 kr?",
+      business: "Skriv et mødereferat: Vi mødtes med Mærsk Gruppen og direktør Anders Nielsen for at diskutere Q3-strategien. Kontakt: anders.nielsen@maersk.com",
+      neutral: "Hvad er forskellen mellem DORA og NIS2 regulering for finansielle institutioner?"
+    };
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function updateCounter() {
+      counter.textContent = `${promptInput.value.length} tegn`;
+    }
 
     async function loadStatus() {
       try {
         const response = await fetch("/health");
         const body = await response.json();
-        status.textContent = `${body.status.toUpperCase()} · ${body.target_api} · demo=${body.demo_mode}`;
+        status.classList.add("ok");
+        status.querySelector("span:last-child").textContent = `${body.status.toUpperCase()} · ${body.target_api}`;
+        target.textContent = body.target_api;
+        mode.textContent = body.demo_mode ? "demo" : "live";
       } catch {
-        status.textContent = "Gateway ikke tilgængelig";
+        status.querySelector("span:last-child").textContent = "Gateway ikke tilgængelig";
       }
+    }
+
+    async function loadAudit() {
+      try {
+        const response = await fetch("/audit");
+        const body = await response.json();
+        const entries = (body.entries || []).slice(-4).reverse();
+        auditList.innerHTML = entries.length ? entries.map(auditRow).join("") : `<div class="empty">Ingen audit entries endnu.</div>`;
+      } catch {
+        auditList.innerHTML = `<div class="empty">Audit kunne ikke hentes.</div>`;
+      }
+    }
+
+    function auditRow(entry) {
+      return `
+        <div class="audit-row">
+          <strong>${escapeHtml(entry.policy_action)}</strong>
+          <span>Regel ${escapeHtml(entry.policy_rule_triggered)}</span>
+        </div>
+      `;
     }
 
     function entityBadges(entities) {
       if (!entities || entities.length === 0) {
-        return "";
+        return `<div class="entity-list"><span class="entity">Ingen entiteter</span></div>`;
       }
-      const badges = entities.map((entity) => `<span class="entity">${entity.label} · ${entity.stage}</span>`);
+      const badges = entities.map((entity) => `<span class="entity">${escapeHtml(entity.label)} · ${escapeHtml(entity.stage)}</span>`);
       return `<div class="entity-list">${badges.join("")}</div>`;
+    }
+
+    function summaryCells(gateway, fallbackAction) {
+      return `
+        <div class="summary-grid">
+          <div class="summary-cell">
+            <div class="summary-label">Beslutning</div>
+            <div class="summary-value">${escapeHtml(gateway.policy_action || fallbackAction)}</div>
+          </div>
+          <div class="summary-cell">
+            <div class="summary-label">Regel</div>
+            <div class="summary-value">${escapeHtml(gateway.policy_rule_triggered || "-")}</div>
+          </div>
+          <div class="summary-cell">
+            <div class="summary-label">Request ID</div>
+            <div class="summary-value">${escapeHtml(gateway.request_id || "-")}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function assistantText(body) {
+      const choice = (body.choices || [])[0] || {};
+      return choice.message?.content || "Ingen demo-respons modtaget.";
     }
 
     function renderBlocked(body) {
       result.className = "result show block";
       result.innerHTML = `
-        <h2>BLOCK</h2>
-        <p>${body.message}</p>
-        <p>${body.policy_reference}</p>
-        <p>${body.regulatory_basis}</p>
-        <p>${body.action_required}</p>
-        <p><strong>Request ID:</strong> ${body.request_id}</p>
+        <div class="result-head">
+          <h2>BLOCK</h2>
+          <span class="pill">HTTP 403</span>
+        </div>
+        <div class="result-body">
+          ${summaryCells({ request_id: body.request_id }, "BLOCK")}
+          <p class="message">${escapeHtml(body.message)}</p>
+          <div class="policy-list">
+            <div class="policy-item">${escapeHtml(body.policy_reference)}</div>
+            <div class="policy-item">${escapeHtml(body.regulatory_basis)}</div>
+            <div class="policy-item">${escapeHtml(body.action_required)}</div>
+          </div>
+        </div>
       `;
     }
 
@@ -248,9 +642,16 @@
       const gateway = body.gateway || {};
       result.className = "result show allow";
       result.innerHTML = `
-        <h2>ALLOW</h2>
-        <p>${gateway.policy_reason || "Prompten blev videresendt."}</p>
-        <pre>${JSON.stringify(body.choices || [], null, 2)}</pre>
+        <div class="result-head">
+          <h2>ALLOW</h2>
+          <span class="pill">Videresendt</span>
+        </div>
+        <div class="result-body">
+          ${summaryCells(gateway, "ALLOW")}
+          <p class="message">${escapeHtml(gateway.policy_reason || "Prompten blev videresendt.")}</p>
+          ${entityBadges(gateway.detected_entities)}
+          <div class="assistant-box">${escapeHtml(assistantText(body))}</div>
+        </div>
       `;
     }
 
@@ -258,18 +659,40 @@
       const gateway = body.gateway || {};
       result.className = "result show mask";
       result.innerHTML = `
-        <h2>MASK_AND_FORWARD</h2>
-        <p>${gateway.policy_reason || "Følsomme data blev maskeret."}</p>
-        ${entityBadges(gateway.detected_entities)}
-        <pre>${JSON.stringify(body.choices || [], null, 2)}</pre>
+        <div class="result-head">
+          <h2>MASK_AND_FORWARD</h2>
+          <span class="pill">Maskeret</span>
+        </div>
+        <div class="result-body">
+          ${summaryCells(gateway, "MASK_AND_FORWARD")}
+          <p class="message">${escapeHtml(gateway.policy_reason || "Følsomme data blev maskeret.")}</p>
+          ${entityBadges(gateway.detected_entities)}
+          <div class="assistant-box">${escapeHtml(assistantText(body))}</div>
+        </div>
       `;
     }
+
+    document.querySelectorAll("[data-sample]").forEach((button) => {
+      button.addEventListener("click", () => {
+        promptInput.value = samples[button.dataset.sample] || samples.neutral;
+        updateCounter();
+        promptInput.focus();
+      });
+    });
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       submit.disabled = true;
       result.className = "result show";
-      result.textContent = "Behandler prompt...";
+      result.innerHTML = `
+        <div class="result-head">
+          <h2>Behandler prompt</h2>
+          <span class="pill">Scanner</span>
+        </div>
+        <div class="result-body">
+          <p class="message">DLP pipeline kører...</p>
+        </div>
+      `;
 
       const payload = {
         model: "gpt-4o-mini",
@@ -290,16 +713,27 @@
         } else {
           renderAllowed(body);
         }
+        await loadAudit();
       } catch (error) {
         result.className = "result show block";
-        result.textContent = `Fejl: ${error.message}`;
+        result.innerHTML = `
+          <div class="result-head">
+            <h2>Fejl</h2>
+            <span class="pill">Gateway</span>
+          </div>
+          <div class="result-body">
+            <p class="message">${escapeHtml(error.message)}</p>
+          </div>
+        `;
       } finally {
         submit.disabled = false;
       }
     });
 
+    promptInput.addEventListener("input", updateCounter);
+    updateCounter();
     loadStatus();
+    loadAudit();
   </script>
 </body>
 </html>
-
