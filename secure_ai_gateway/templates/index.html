@@ -3,37 +3,55 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Secure AI Gateway — Demo</title>
+  <title>Secure AI Gateway - Demo</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #f5f7fa;
-      --panel: #ffffff;
-      --panel-soft: #f8fafc;
-      --ink: #17202e;
-      --muted: #667085;
-      --line: #d8dee8;
-      --blue: #2454a6;
-      --blue-soft: #eaf1ff;
-      --green: #177245;
-      --green-bg: #e8f7ef;
-      --amber: #946200;
-      --amber-bg: #fff4d6;
-      --red: #b4232f;
-      --red-bg: #fde8ea;
-      --shadow: 0 18px 45px rgba(16, 24, 40, 0.10);
+      --bg: #eef2ef;
+      --bg-deep: #dfe7e2;
+      --rail: #17221f;
+      --rail-soft: #22312d;
+      --panel: #fbfcfb;
+      --panel-strong: #ffffff;
+      --ink: #17201d;
+      --muted: #68746f;
+      --muted-dark: #aebbb5;
+      --line: #d8e0dc;
+      --line-strong: #c1ccc6;
+      --teal: #27746d;
+      --teal-strong: #195d58;
+      --teal-soft: #e1f4ef;
+      --blue: #355f9c;
+      --blue-soft: #e4ecfb;
+      --green: #187044;
+      --green-bg: #e5f7ed;
+      --amber: #946311;
+      --amber-bg: #fff1ca;
+      --red: #b12c36;
+      --red-bg: #fde7e9;
+      --shadow: 0 22px 70px rgba(24, 35, 31, 0.14);
+      --shadow-soft: 0 12px 34px rgba(24, 35, 31, 0.10);
+      --radius: 8px;
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html,
+    body {
+      height: 100%;
+    }
+
     body {
       margin: 0;
-      min-height: 100vh;
-      background: var(--bg);
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(39, 116, 109, 0.12), transparent 34%),
+        linear-gradient(315deg, rgba(198, 106, 43, 0.09), transparent 32%),
+        var(--bg);
       color: var(--ink);
-      font-family: Inter, Arial, Helvetica, sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
       letter-spacing: 0;
     }
 
@@ -42,179 +60,386 @@
       font: inherit;
     }
 
-    main {
-      width: min(980px, calc(100% - 32px));
-      margin: 0 auto;
-      padding: 28px 0 34px;
+    button {
+      border: 0;
     }
 
-    header {
+    .app-shell {
+      display: grid;
+      grid-template-columns: 318px minmax(0, 1fr);
+      height: 100dvh;
+      padding: 14px;
+      gap: 14px;
+    }
+
+    .sidebar {
       display: flex;
-      align-items: end;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      background: var(--rail);
+      color: white;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      padding: 22px 20px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 8px;
+      background: #f4fbf8;
+      color: var(--teal-strong);
+      font-size: 15px;
+      font-weight: 950;
+      box-shadow: inset 0 0 0 1px rgba(25, 93, 88, 0.12);
     }
 
     h1,
     h2,
+    h3,
     p {
       margin: 0;
     }
 
     h1 {
-      font-size: 30px;
-      line-height: 1.15;
+      font-size: 20px;
+      line-height: 1.1;
+      letter-spacing: 0;
     }
 
     .subtitle {
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 14px;
+      margin-top: 6px;
+      color: var(--muted-dark);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .rail-section {
+      padding: 18px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .section-label {
+      margin-bottom: 11px;
+      color: #cdd8d3;
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
     }
 
     .health {
-      min-height: 34px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      padding: 8px 12px;
-      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      min-height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.06);
+      padding: 10px 12px;
+      color: #eef7f4;
       font-size: 13px;
-      font-weight: 700;
-      white-space: nowrap;
+      font-weight: 800;
     }
 
-    .card {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel);
-      box-shadow: var(--shadow);
-    }
-
-    .composer {
-      padding: 20px;
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: #55d58e;
+      box-shadow: 0 0 0 4px rgba(85, 213, 142, 0.14);
     }
 
     .service-selector {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-      margin-bottom: 16px;
+      gap: 9px;
     }
 
     .service {
-      min-height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--panel-soft);
-      color: var(--ink);
-      padding: 0 12px;
-      font-size: 14px;
-      font-weight: 800;
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      align-items: center;
+      min-height: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      color: #eef6f2;
+      padding: 7px 10px 7px 7px;
+      text-align: left;
       cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+    }
+
+    .service:hover {
+      transform: translateY(-1px);
+      background: rgba(255, 255, 255, 0.085);
+      border-color: rgba(255, 255, 255, 0.16);
     }
 
     .service.selected {
-      border-color: var(--blue);
-      background: var(--blue-soft);
-      color: var(--blue);
+      background: #f4fbf8;
+      color: var(--teal-strong);
+      border-color: #f4fbf8;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
     }
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-      text-transform: uppercase;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 185px;
-      resize: vertical;
-      border: 1px solid var(--line);
+    .service-badge {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
       border-radius: 8px;
-      outline: none;
-      background: #fbfdff;
-      color: var(--ink);
-      padding: 15px;
-      font-size: 16px;
-      line-height: 1.5;
+      background: rgba(255, 255, 255, 0.10);
+      color: inherit;
+      font-size: 12px;
+      font-weight: 950;
     }
 
-    textarea:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px rgba(36, 84, 166, 0.14);
+    .service.selected .service-badge {
+      background: var(--teal-soft);
     }
 
-    .actions {
+    .service-name {
+      display: block;
+      min-width: 0;
+      overflow: hidden;
+      font-size: 14px;
+      font-weight: 900;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .service-meta {
+      display: block;
+      margin-top: 2px;
+      color: currentColor;
+      font-size: 12px;
+      font-weight: 650;
+      opacity: 0.68;
+    }
+
+    .audit-panel {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      flex-direction: column;
+      padding: 18px 16px 16px;
+    }
+
+    details {
+      display: flex;
+      min-height: 0;
+      flex: 1;
+      flex-direction: column;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.055);
+      overflow: hidden;
+    }
+
+    details[open] {
+      background: rgba(255, 255, 255, 0.075);
+    }
+
+    summary {
+      padding: 13px 14px;
+      color: #eef6f2;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      list-style-position: inside;
+    }
+
+    pre {
+      flex: 1;
+      min-height: 210px;
+      max-height: 48vh;
+      margin: 0;
+      overflow: auto;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: #101715;
+      color: #dce8e4;
+      padding: 14px;
+      font: 12px/1.55 Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+
+    .chat {
+      display: grid;
+      min-width: 0;
+      min-height: 0;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      overflow: hidden;
+      border: 1px solid rgba(23, 32, 29, 0.08);
+      border-radius: var(--radius);
+      background: rgba(251, 252, 251, 0.90);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-top: 14px;
+      gap: 18px;
+      min-height: 74px;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.74);
     }
 
-    .counter {
+    .top-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .model-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--panel-strong);
+      padding: 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .model-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--teal);
+    }
+
+    .topbar h2 {
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .topbar p {
+      margin-top: 3px;
       color: var(--muted);
       font-size: 13px;
     }
 
-    .send {
-      min-height: 44px;
-      border: 0;
+    .conversation {
+      min-height: 0;
+      overflow: auto;
+      padding: 24px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 760px);
+      gap: 12px;
+      margin: 0 0 18px;
+      animation: rise 220ms ease both;
+    }
+
+    .message.user {
+      grid-template-columns: minmax(0, 760px) 38px;
+      justify-content: end;
+    }
+
+    .avatar {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
       border-radius: 8px;
-      background: var(--blue);
+      background: var(--rail);
       color: white;
-      padding: 0 18px;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
+      font-size: 12px;
+      font-weight: 950;
     }
 
-    .send:disabled {
-      cursor: wait;
-      opacity: 0.7;
+    .message.user .avatar {
+      grid-column: 2;
+      background: var(--blue);
     }
 
-    .result {
-      display: none;
-      margin-top: 18px;
-      overflow: hidden;
+    .bubble {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      padding: 14px 15px;
+      box-shadow: var(--shadow-soft);
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .message.user .bubble {
+      grid-column: 1;
+      grid-row: 1;
+      border-color: rgba(53, 95, 156, 0.22);
+      background: var(--blue-soft);
+    }
+
+    .message.system {
+      grid-template-columns: 38px minmax(0, 760px);
     }
 
     .stream-response {
       display: none;
-      margin-top: 18px;
-      padding: 18px;
-    }
-
-    .result.show {
-      display: block;
     }
 
     .stream-response.show {
-      display: block;
-    }
-
-    .stream-title {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 900;
-      text-transform: uppercase;
+      display: grid;
     }
 
     .stream-text {
-      min-height: 96px;
-      margin-top: 10px;
-      border: 1px solid rgba(23, 32, 46, 0.12);
-      border-radius: 8px;
-      background: #fbfdff;
-      padding: 14px;
-      line-height: 1.55;
-      white-space: pre-wrap;
+      min-height: 54px;
+    }
+
+    .stream-text:empty::after {
+      content: "";
+      display: inline-block;
+      width: 8px;
+      height: 18px;
+      border-radius: 2px;
+      background: var(--teal);
+      vertical-align: -3px;
+      animation: caret 850ms ease-in-out infinite;
+    }
+
+    .result {
+      display: none;
+    }
+
+    .result.show {
+      display: grid;
+    }
+
+    .result-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      box-shadow: var(--shadow-soft);
     }
 
     .result-head {
@@ -222,37 +447,64 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      border-bottom: 1px solid var(--line);
-      padding: 16px 18px;
+      padding: 14px 15px;
+      border-bottom: 1px solid rgba(23, 32, 29, 0.08);
     }
 
     .result-body {
-      padding: 18px;
+      padding: 15px;
     }
 
-    .result.block {
-      border-color: var(--red);
+    .result-body p {
+      margin-top: 9px;
+      line-height: 1.5;
+    }
+
+    .result-body p:first-child {
+      margin-top: 0;
+    }
+
+    .result.block .result-card {
+      border-color: rgba(177, 44, 54, 0.32);
       background: var(--red-bg);
     }
 
-    .result.mask {
-      border-color: var(--amber);
+    .result.mask .result-card {
+      border-color: rgba(148, 99, 17, 0.32);
       background: var(--amber-bg);
     }
 
-    .result.allow {
-      border-color: var(--green);
+    .result.allow .result-card {
+      border-color: rgba(24, 112, 68, 0.30);
       background: var(--green-bg);
     }
 
-    .result h2 {
-      font-size: 19px;
-      line-height: 1.2;
+    .state-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 16px;
+      font-weight: 950;
     }
 
-    .result p {
-      margin-top: 10px;
-      line-height: 1.5;
+    .state-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: currentColor;
+      box-shadow: 0 0 0 4px rgba(23, 32, 29, 0.08);
+    }
+
+    .result.block .state-title {
+      color: var(--red);
+    }
+
+    .result.mask .state-title {
+      color: var(--amber);
+    }
+
+    .result.allow .state-title {
+      color: var(--green);
     }
 
     .pill {
@@ -275,125 +527,319 @@
     }
 
     .token {
-      border: 1px solid rgba(23, 32, 46, 0.16);
+      border: 1px solid rgba(23, 32, 29, 0.13);
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.72);
-      padding: 6px 10px;
+      padding: 7px 10px;
       font-family: Consolas, "Courier New", monospace;
-      font-size: 13px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 850;
     }
 
-    .llm-response {
-      margin-top: 12px;
-      border: 1px solid rgba(23, 32, 46, 0.12);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.74);
-      padding: 13px;
+    .composer {
+      padding: 16px 20px 20px;
+      border-top: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .composer-frame {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 12px;
+      max-width: 940px;
+      margin: 0 auto;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel-strong);
+      padding: 10px;
+      box-shadow: var(--shadow-soft);
+    }
+
+    label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+    }
+
+    textarea {
+      width: 100%;
+      max-height: 180px;
+      min-height: 52px;
+      resize: none;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: var(--ink);
+      padding: 7px 8px;
+      font-size: 15px;
       line-height: 1.5;
     }
 
-    details {
-      margin-top: 16px;
-      border: 1px solid var(--line);
+    textarea::placeholder {
+      color: #8a9690;
+    }
+
+    .composer-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 2px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .send {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 46px;
+      height: 42px;
       border-radius: 8px;
-      background: var(--panel);
-    }
-
-    summary {
-      padding: 13px 15px;
-      color: var(--ink);
-      font-weight: 900;
+      background: var(--rail);
+      color: white;
       cursor: pointer;
+      transition: transform 160ms ease, background 160ms ease, opacity 160ms ease;
     }
 
-    pre {
-      margin: 0;
-      overflow: auto;
-      border-top: 1px solid var(--line);
-      background: #0f172a;
-      color: #e5e7eb;
-      padding: 15px;
-      font: 13px/1.5 Consolas, "Courier New", monospace;
-      white-space: pre-wrap;
+    .send:hover {
+      transform: translateY(-1px);
+      background: var(--teal-strong);
     }
 
-    @media (max-width: 680px) {
-      main {
-        width: min(100% - 20px, 980px);
-        padding-top: 18px;
+    .send:disabled {
+      cursor: wait;
+      opacity: 0.68;
+      transform: none;
+    }
+
+    .send-icon {
+      font-size: 18px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .fineprint {
+      max-width: 940px;
+      margin: 9px auto 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(7px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes caret {
+      0%,
+      100% {
+        opacity: 0.25;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 900px) {
+      body {
+        overflow: auto;
       }
 
-      header,
-      .actions,
-      .result-head {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .service-selector {
+      .app-shell {
+        height: auto;
+        min-height: 100dvh;
         grid-template-columns: 1fr;
       }
 
-      .send,
-      .health {
-        width: 100%;
+      .sidebar {
+        max-height: none;
+      }
+
+      .audit-panel {
+        flex: initial;
+      }
+
+      .chat {
+        min-height: 76dvh;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .app-shell {
+        padding: 8px;
+        gap: 8px;
+      }
+
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 16px;
+      }
+
+      .conversation {
+        padding: 16px 12px;
+      }
+
+      .message,
+      .message.system,
+      .message.user {
+        grid-template-columns: 1fr;
+      }
+
+      .avatar {
+        display: none;
+      }
+
+      .message.user .bubble {
+        grid-column: auto;
+      }
+
+      .composer {
+        padding: 12px;
+      }
+
+      .composer-frame {
+        grid-template-columns: 1fr;
+      }
+
+      .composer-actions {
+        justify-content: space-between;
+      }
+
+      .send {
+        min-width: 96px;
       }
     }
   </style>
 </head>
 <body>
-  <main>
-    <header>
-      <div>
-        <h1>Secure AI Gateway — Demo</h1>
-        <p class="subtitle">KEA IT-Sikkerhed Bachelorprojekt</p>
-      </div>
-      <div class="health" id="health">Gateway status hentes...</div>
-    </header>
-
-    <section class="card composer">
-      <div class="service-selector" aria-label="Vælg LLM-service">
-        <button class="service" type="button" data-target="openai">ChatGPT / OpenAI</button>
-        <button class="service" type="button" data-target="anthropic">Claude / Anthropic</button>
-        <button class="service" type="button" data-target="gemini">Gemini</button>
-        <button class="service selected" type="button" data-target="mock">Mock / Demo</button>
-      </div>
-
-      <form id="prompt-form">
-        <label for="prompt">Prompt</label>
-        <textarea id="prompt" placeholder="Skriv din prompt her..." required></textarea>
-        <div class="actions">
-          <span class="counter" id="counter">0 tegn</span>
-          <button class="send" id="send" type="submit">Send via Gateway</button>
+  <main class="app-shell">
+    <aside class="sidebar">
+      <section class="brand">
+        <div class="brand-row">
+          <div class="brand-mark">SA</div>
+          <div>
+            <h1>Secure AI Gateway</h1>
+            <p class="subtitle">KEA IT-Sikkerhed Bachelorprojekt</p>
+          </div>
         </div>
+      </section>
+
+      <section class="rail-section">
+        <div class="section-label">Gateway status</div>
+        <div class="health" id="health">
+          <span>Gateway status hentes...</span>
+          <span class="status-dot" aria-hidden="true"></span>
+        </div>
+      </section>
+
+      <section class="rail-section">
+        <div class="section-label">LLM target</div>
+        <div class="service-selector" aria-label="Vælg LLM-service">
+          <button class="service" type="button" data-target="openai">
+            <span class="service-badge">O</span>
+            <span>
+              <span class="service-name">ChatGPT / OpenAI</span>
+              <span class="service-meta">OpenAI compatible</span>
+            </span>
+          </button>
+          <button class="service" type="button" data-target="anthropic">
+            <span class="service-badge">C</span>
+            <span>
+              <span class="service-name">Claude / Anthropic</span>
+              <span class="service-meta">Messages API</span>
+            </span>
+          </button>
+          <button class="service" type="button" data-target="gemini">
+            <span class="service-badge">G</span>
+            <span>
+              <span class="service-name">Gemini</span>
+              <span class="service-meta">gemini-2.0-flash</span>
+            </span>
+          </button>
+          <button class="service selected" type="button" data-target="mock">
+            <span class="service-badge">M</span>
+            <span>
+              <span class="service-name">Mock / Demo</span>
+              <span class="service-meta">No API key</span>
+            </span>
+          </button>
+        </div>
+      </section>
+
+      <section class="audit-panel">
+        <div class="section-label">Rapportmateriale</div>
+        <details id="audit-details">
+          <summary>Audit log entry</summary>
+          <pre id="audit-json">{}</pre>
+        </details>
+      </section>
+    </aside>
+
+    <section class="chat">
+      <header class="topbar">
+        <div class="top-title">
+          <div class="brand-mark">DLP</div>
+          <div>
+            <h2>Gateway chat</h2>
+            <p>Prompten kontrolleres, maskeres eller blokeres før den forlader gatewayen.</p>
+          </div>
+        </div>
+        <div class="model-pill" id="model-pill">Mock / Demo</div>
+      </header>
+
+      <section class="conversation" id="conversation" aria-live="polite">
+        <article class="message system">
+          <div class="avatar">SA</div>
+          <div class="bubble">
+            Velkommen. Send en prompt gennem gatewayen for at se DLP-beslutning, streaming-svar og audit-entry.
+          </div>
+        </article>
+      </section>
+
+      <form class="composer" id="prompt-form">
+        <label for="prompt">Prompt</label>
+        <div class="composer-frame">
+          <textarea id="prompt" placeholder="Skriv din prompt her..." required></textarea>
+          <div class="composer-actions">
+            <span class="counter" id="counter">0 tegn</span>
+            <button class="send" id="send" type="submit" aria-label="Send via Gateway">
+              <span class="send-icon">↑</span>
+            </button>
+          </div>
+        </div>
+        <p class="fineprint">Sensitive værdier sendes ikke videre, når policyen kræver maskering eller blokering.</p>
       </form>
     </section>
-
-    <section class="card stream-response" id="stream-response" aria-live="polite">
-      <div class="stream-title">LLM response</div>
-      <div class="stream-text" id="response-text"></div>
-    </section>
-
-    <section class="card result" id="result" aria-live="polite"></section>
-
-    <details id="audit-details">
-      <summary>Audit log entry (til rapport)</summary>
-      <pre id="audit-json">{}</pre>
-    </details>
   </main>
 
   <script>
     const promptInput = document.querySelector("#prompt");
     const form = document.querySelector("#prompt-form");
     const send = document.querySelector("#send");
-    const result = document.querySelector("#result");
-    const streamResponse = document.querySelector("#stream-response");
-    const responseText = document.querySelector("#response-text");
     const counter = document.querySelector("#counter");
     const health = document.querySelector("#health");
     const auditJson = document.querySelector("#audit-json");
     const serviceButtons = document.querySelectorAll("[data-target]");
+    const conversation = document.querySelector("#conversation");
+    const modelPill = document.querySelector("#model-pill");
 
     const tokenByLabel = {
       CPR_NUMBER: "[CPR-MASKERET]",
@@ -405,8 +851,18 @@
       ORG: "[ORG-MASKERET]"
     };
 
+    const targetLabels = {
+      openai: "ChatGPT / OpenAI",
+      anthropic: "Claude / Anthropic",
+      gemini: "Gemini",
+      mock: "Mock / Demo"
+    };
+
     let selectedTarget = "mock";
     let streamFailed = false;
+    let activeStreamResponse = null;
+    let activeResponseText = null;
+    let activeResult = null;
 
     function escapeHtml(value) {
       return String(value || "")
@@ -419,6 +875,8 @@
 
     function updateCounter() {
       counter.textContent = `${promptInput.value.length} tegn`;
+      promptInput.style.height = "auto";
+      promptInput.style.height = `${Math.min(promptInput.scrollHeight, 180)}px`;
     }
 
     function selectedModel() {
@@ -431,28 +889,69 @@
       serviceButtons.forEach((button) => {
         button.classList.toggle("selected", button.dataset.target === selectedTarget);
       });
+      modelPill.textContent = targetLabels[selectedTarget] || "Mock / Demo";
+    }
+
+    function scrollChat() {
+      requestAnimationFrame(() => {
+        conversation.scrollTop = conversation.scrollHeight;
+      });
+    }
+
+    function addUserMessage(text) {
+      const message = document.createElement("article");
+      message.className = "message user";
+      message.innerHTML = `
+        <div class="avatar">DU</div>
+        <div class="bubble">${escapeHtml(text)}</div>
+      `;
+      conversation.appendChild(message);
+      scrollChat();
     }
 
     function setResult(type, html) {
-      result.className = `card result show ${type}`;
-      result.innerHTML = html;
+      if (!activeResult) {
+        activeResult = document.createElement("article");
+        conversation.appendChild(activeResult);
+      }
+      activeResult.className = `message system result show ${type}`;
+      activeResult.innerHTML = `
+        <div class="avatar">DLP</div>
+        <div class="result-card">${html}</div>
+      `;
+      scrollChat();
     }
 
     function showEmptyStream() {
       streamFailed = false;
-      responseText.textContent = "";
-      streamResponse.classList.add("show");
-      result.className = "card result";
-      result.innerHTML = "";
+      activeStreamResponse = document.createElement("article");
+      activeStreamResponse.className = "message system stream-response show";
+      activeStreamResponse.innerHTML = `
+        <div class="avatar">LLM</div>
+        <div class="bubble stream-text"></div>
+      `;
+      activeResponseText = activeStreamResponse.querySelector(".stream-text");
+      activeResult = document.createElement("article");
+      activeResult.className = "message system result";
+      conversation.appendChild(activeStreamResponse);
+      conversation.appendChild(activeResult);
+      scrollChat();
     }
 
     function hideStream() {
-      streamResponse.classList.remove("show");
-      responseText.textContent = "";
+      if (activeStreamResponse) {
+        activeStreamResponse.remove();
+        activeStreamResponse = null;
+        activeResponseText = null;
+      }
+      scrollChat();
     }
 
     function appendStreamText(text) {
-      responseText.textContent += text;
+      if (activeResponseText) {
+        activeResponseText.textContent += text;
+      }
+      scrollChat();
     }
 
     function assistantText(body) {
@@ -491,12 +990,18 @@
       }
     }
 
+    function resultHeader(title, pill) {
+      return `
+        <div class="result-head">
+          <div class="state-title"><span class="state-dot"></span>${escapeHtml(title)}</div>
+          <span class="pill">${escapeHtml(pill)}</span>
+        </div>
+      `;
+    }
+
     function renderBlocked(body) {
       setResult("block", `
-        <div class="result-head">
-          <h2>🔴 BLOKERET</h2>
-          <span class="pill">Request ${escapeHtml(body.request_id)}</span>
-        </div>
+        ${resultHeader("BLOKERET", `Request ${body.request_id}`)}
         <div class="result-body">
           <p><strong>Detekteret:</strong> ${escapeHtml(body.message)}</p>
           <p>${escapeHtml(body.policy_reference)}</p>
@@ -512,10 +1017,7 @@
       streamFailed = true;
       hideStream();
       setResult("block", `
-        <div class="result-head">
-          <h2>🔴 GEMINI-FEJL</h2>
-          <span class="pill">LLM API</span>
-        </div>
+        ${resultHeader("GEMINI-FEJL", "LLM API")}
         <div class="result-body">
           <p>Gatewayen gennemførte DLP-kontrollen, men Gemini-kaldet fejlede.</p>
           <p><strong>DLP-beslutning:</strong> ${escapeHtml(data.gateway?.policy_action || "-")} blev ikke vist som succes, fordi LLM-kaldet fejlede.</p>
@@ -529,14 +1031,11 @@
       const gateway = body.gateway || {};
       const tokens = maskedTokens(gateway);
       setResult("mask", `
-        <div class="result-head">
-          <h2>🟡 MASKERET OG VIDERESENDT</h2>
-          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
-        </div>
+        ${resultHeader("MASKERET OG VIDERESENDT", `Regel ${gateway.policy_rule_triggered || "-"}`)}
         <div class="result-body">
           <p>Følsomme data er fjernet fra din prompt inden afsendelse.</p>
           ${tokenList(tokens)}
-          <div class="llm-response">${escapeHtml(assistantText(body))}</div>
+          <div class="bubble">${escapeHtml(assistantText(body))}</div>
         </div>
       `);
       showAudit(gateway.request_id);
@@ -545,13 +1044,10 @@
     function renderAllowed(body) {
       const gateway = body.gateway || {};
       setResult("allow", `
-        <div class="result-head">
-          <h2>🟢 VIDERESENDT UDEN ÆNDRINGER</h2>
-          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
-        </div>
+        ${resultHeader("VIDERESENDT UDEN ÆNDRINGER", `Regel ${gateway.policy_rule_triggered || "-"}`)}
         <div class="result-body">
           <p>Ingen følsomme data detekteret.</p>
-          <div class="llm-response">${escapeHtml(assistantText(body))}</div>
+          <div class="bubble">${escapeHtml(assistantText(body))}</div>
         </div>
       `);
       showAudit(gateway.request_id);
@@ -561,10 +1057,7 @@
       const gateway = data.gateway || {};
       const tokens = maskedTokens(gateway);
       setResult("mask", `
-        <div class="result-head">
-          <h2>🟡 MASKERET OG VIDERESENDT</h2>
-          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
-        </div>
+        ${resultHeader("MASKERET OG VIDERESENDT", `Regel ${gateway.policy_rule_triggered || "-"}`)}
         <div class="result-body">
           <p>Følsomme data er fjernet fra din prompt inden afsendelse.</p>
           ${tokenList(tokens)}
@@ -576,10 +1069,7 @@
     function renderAllowedFinal(data) {
       const gateway = data.gateway || {};
       setResult("allow", `
-        <div class="result-head">
-          <h2>🟢 VIDERESENDT UDEN ÆNDRINGER</h2>
-          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
-        </div>
+        ${resultHeader("VIDERESENDT UDEN ÆNDRINGER", `Regel ${gateway.policy_rule_triggered || "-"}`)}
         <div class="result-body">
           <p>Ingen følsomme data detekteret.</p>
         </div>
@@ -657,10 +1147,10 @@
       try {
         const response = await fetch("/health");
         const body = await response.json();
-        health.textContent = `${body.status.toUpperCase()} · ${body.target_api} · demo=${body.demo_mode}`;
+        health.innerHTML = `<span>${escapeHtml(body.status).toUpperCase()} · ${escapeHtml(body.target_api)} · demo=${escapeHtml(body.demo_mode)}</span><span class="status-dot" aria-hidden="true"></span>`;
         setSelectedTarget(body.target_api);
       } catch {
-        health.textContent = "Gateway ikke tilgængelig";
+        health.innerHTML = `<span>Gateway ikke tilgængelig</span><span class="status-dot" aria-hidden="true"></span>`;
       }
     }
 
@@ -672,11 +1162,17 @@
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
+      const prompt = promptInput.value.trim();
+      if (!prompt) {
+        return;
+      }
+
       send.disabled = true;
+      addUserMessage(prompt);
       showEmptyStream();
 
       const payload = {
-        messages: [{ role: "user", content: promptInput.value }],
+        messages: [{ role: "user", content: prompt }],
         model: selectedModel(),
         target: selectedTarget
       };
@@ -700,18 +1196,25 @@
       } catch (error) {
         hideStream();
         setResult("block", `
-          <div class="result-head">
-            <h2>Fejl</h2>
-            <span class="pill">Gateway</span>
-          </div>
+          ${resultHeader("GATEWAY-FEJL", "Gateway")}
           <div class="result-body"><p>${escapeHtml(error.message)}</p></div>
         `);
       } finally {
         send.disabled = false;
+        promptInput.value = "";
+        updateCounter();
+        promptInput.focus();
       }
     });
 
     promptInput.addEventListener("input", updateCounter);
+    promptInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
     updateCounter();
     loadHealth();
   </script>
