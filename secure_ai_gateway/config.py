@@ -1,4 +1,4 @@
-"""Configuration — implements the deployable PoC settings for the thesis gateway.
+"""Configuration — adresserer Gap G4: miljøstyret og reproducerbar PoC-drift.
 
 This module centralises environment-driven configuration for the DORA/NIS2
 proxy proof-of-concept, keeping API keys, target provider selection, logging,
@@ -43,6 +43,7 @@ class Settings:
 
     openai_api_key: str | None
     anthropic_api_key: str | None
+    gemini_api_key: str | None
     target_api: str
     target_model: str
     gateway_port: int
@@ -52,11 +53,14 @@ class Settings:
     @classmethod
     def from_env(cls) -> "Settings":
         """Create a Settings object from environment variables."""
+        gemini_api_key = os.getenv("GEMINI_API_KEY")
+        target_api = _target_api_from_env(os.getenv("TARGET_API"), gemini_api_key)
         return cls(
             openai_api_key=os.getenv("OPENAI_API_KEY"),
             anthropic_api_key=os.getenv("ANTHROPIC_API_KEY"),
-            target_api=os.getenv("TARGET_API", "mock").strip().lower(),
-            target_model=os.getenv("TARGET_MODEL", "gpt-4o-mini"),
+            gemini_api_key=gemini_api_key,
+            target_api=target_api,
+            target_model=os.getenv("TARGET_MODEL") or _default_model(target_api),
             gateway_port=_int_from_env(os.getenv("GATEWAY_PORT"), 8000),
             demo_mode=_bool_from_env(os.getenv("DEMO_MODE"), True),
             log_file=os.getenv("LOG_FILE", "audit.log"),
@@ -68,9 +72,24 @@ class Settings:
         endpoints = {
             "openai": "https://api.openai.com/v1/chat/completions",
             "anthropic": "https://api.anthropic.com/v1/messages",
+            "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
             "mock": "mock://secure-ai-gateway/demo",
         }
         return endpoints.get(self.target_api, endpoints["mock"])
+
+
+def _target_api_from_env(value: str | None, gemini_api_key: str | None) -> str:
+    """Default to Gemini when a Gemini key is configured."""
+    if value:
+        return value.strip().lower()
+    return "gemini" if gemini_api_key else "mock"
+
+
+def _default_model(target_api: str) -> str:
+    """Return a sensible default model for the selected target."""
+    if target_api == "gemini":
+        return "gemini-2.0-flash"
+    return "gpt-4o-mini"
 
 
 def get_settings() -> Settings:

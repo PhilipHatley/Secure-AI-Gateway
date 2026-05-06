@@ -1,4 +1,4 @@
-"""DLP Pipeline — implements Gap G1/G_KI1 from the empirical analysis.
+"""DLP Pipeline — adresserer Gap G1/G_KI1: teknologiagnostisk DLP-kontrol.
 
 The pipeline operationalises the thesis feature set by combining deterministic
 regex detection for high-risk identifiers with spaCy NER for names,
@@ -15,7 +15,7 @@ from typing import Any
 
 HIGH_RISK_LABELS = {"CPR_NUMBER", "IBAN", "CREDIT_CARD", "API_KEY"}
 LOW_RISK_LABELS = {"EMAIL", "PERSON", "ORG"}
-NER_LABEL_MAP = {"PER": "PERSON", "PERSON": "PERSON", "ORG": "ORG", "GPE": "GPE", "LOC": "GPE"}
+NER_LABEL_MAP = {"PER": "PERSON", "PERSON": "PERSON", "ORG": "ORG"}
 
 
 @dataclass(frozen=True)
@@ -128,4 +128,3 @@ def _risk_level(entities: list[DetectedEntity]) -> str:
 def _sort_entities(entities: list[DetectedEntity]) -> list[DetectedEntity]:
     """Sort entities by prompt position to keep demo output stable."""
     return sorted(entities, key=lambda entity: (entity.start, entity.end, entity.label))
-

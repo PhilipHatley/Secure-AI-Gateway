@@ -1,4 +1,4 @@
-"""Demo Script — implements the three thesis validation scenarios.
+"""Demo Script — adresserer Gap G7: reproducerbare testscenarier til evaluering.
 
 The script demonstrates the proxy control outcomes for CPR blocking, business
 data masking, and neutral prompt forwarding, matching the bachelor thesis test
@@ -29,7 +29,7 @@ class Scenario:
 
 SCENARIOS = (
     Scenario(
-        title="SCENARIO 1 — CPR-nummer i prompt",
+        title="SCENARIO 1 — CPR i prompt",
         expected="BLOCK",
         prompt=(
             "Kan du hjælpe mig med at vurdere kreditrisikoen for kunden Lars Jensen, "
@@ -37,7 +37,7 @@ SCENARIOS = (
         ),
     ),
     Scenario(
-        title="SCENARIO 2 — Interne forretningsdata",
+        title="SCENARIO 2 — Forretningsdata med navn og email",
         expected="MASK_AND_FORWARD",
         prompt=(
             "Skriv et mødereferat: Vi mødtes med Mærsk Gruppen og direktør Anders "
@@ -45,7 +45,7 @@ SCENARIOS = (
         ),
     ),
     Scenario(
-        title="SCENARIO 3 — Neutral prompt",
+        title="SCENARIO 3 — Neutral faglig prompt",
         expected="ALLOW",
         prompt="Hvad er forskellen mellem DORA og NIS2 regulering for finansielle institutioner?",
     ),
@@ -99,7 +99,7 @@ def _audit_scenario(
     settings = get_settings()
     entry = build_audit_entry(
         request_id=request_id,
-        target_api=settings.target_endpoint,
+        target_api=settings.target_api,
         original_prompt_length=len(prompt),
         detected_entities=result.detected_entities,
         masked_values_stored=bool(masking and masking.token_mapping),
@@ -130,11 +130,11 @@ def _print_scenario(
 
 
 def _dlp_summary(result: DLPResult) -> dict[str, object]:
-    """Build a printable DLP summary that includes values only for terminal demo output."""
+    """Build a printable DLP summary without raw entity values."""
     return {
         "risk_level": result.risk_level,
         "detected_entities": [
-            {"label": entity.label, "value": entity.value, "stage": entity.stage}
+            {"label": entity.label, "stage": entity.stage}
             for entity in result.detected_entities
         ],
     }
@@ -142,4 +142,3 @@ def _dlp_summary(result: DLPResult) -> dict[str, object]:
 
 if __name__ == "__main__":
     main()
-

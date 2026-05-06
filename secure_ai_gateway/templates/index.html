@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Secure AI Gateway — Demo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7fa;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --ink: #17202e;
+      --muted: #667085;
+      --line: #d8dee8;
+      --blue: #2454a6;
+      --blue-soft: #eaf1ff;
+      --green: #177245;
+      --green-bg: #e8f7ef;
+      --amber: #946200;
+      --amber-bg: #fff4d6;
+      --red: #b4232f;
+      --red-bg: #fde8ea;
+      --shadow: 0 18px 45px rgba(16, 24, 40, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      letter-spacing: 0;
+    }
+
+    button,
+    textarea {
+      font: inherit;
+    }
+
+    main {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 34px;
+    }
+
+    header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    h1,
+    h2,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .health {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .composer {
+      padding: 20px;
+    }
+
+    .service-selector {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .service {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-soft);
+      color: var(--ink);
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .service.selected {
+      border-color: var(--blue);
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 185px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      outline: none;
+      background: #fbfdff;
+      color: var(--ink);
+      padding: 15px;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(36, 84, 166, 0.14);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .send {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--blue);
+      color: white;
+      padding: 0 18px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .send:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    .result {
+      display: none;
+      margin-top: 18px;
+      overflow: hidden;
+    }
+
+    .stream-response {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+    }
+
+    .result.show {
+      display: block;
+    }
+
+    .stream-response.show {
+      display: block;
+    }
+
+    .stream-title {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .stream-text {
+      min-height: 96px;
+      margin-top: 10px;
+      border: 1px solid rgba(23, 32, 46, 0.12);
+      border-radius: 8px;
+      background: #fbfdff;
+      padding: 14px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .result-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--line);
+      padding: 16px 18px;
+    }
+
+    .result-body {
+      padding: 18px;
+    }
+
+    .result.block {
+      border-color: var(--red);
+      background: var(--red-bg);
+    }
+
+    .result.mask {
+      border-color: var(--amber);
+      background: var(--amber-bg);
+    }
+
+    .result.allow {
+      border-color: var(--green);
+      background: var(--green-bg);
+    }
+
+    .result h2 {
+      font-size: 19px;
+      line-height: 1.2;
+    }
+
+    .result p {
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      padding: 0 10px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .token-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .token {
+      border: 1px solid rgba(23, 32, 46, 0.16);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      padding: 6px 10px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .llm-response {
+      margin-top: 12px;
+      border: 1px solid rgba(23, 32, 46, 0.12);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.74);
+      padding: 13px;
+      line-height: 1.5;
+    }
+
+    details {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    summary {
+      padding: 13px 15px;
+      color: var(--ink);
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    pre {
+      margin: 0;
+      overflow: auto;
+      border-top: 1px solid var(--line);
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 15px;
+      font: 13px/1.5 Consolas, "Courier New", monospace;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 680px) {
+      main {
+        width: min(100% - 20px, 980px);
+        padding-top: 18px;
+      }
+
+      header,
+      .actions,
+      .result-head {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .service-selector {
+        grid-template-columns: 1fr;
+      }
+
+      .send,
+      .health {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Secure AI Gateway — Demo</h1>
+        <p class="subtitle">KEA IT-Sikkerhed Bachelorprojekt</p>
+      </div>
+      <div class="health" id="health">Gateway status hentes...</div>
+    </header>
+
+    <section class="card composer">
+      <div class="service-selector" aria-label="Vælg LLM-service">
+        <button class="service" type="button" data-target="openai">ChatGPT / OpenAI</button>
+        <button class="service" type="button" data-target="anthropic">Claude / Anthropic</button>
+        <button class="service" type="button" data-target="gemini">Gemini</button>
+        <button class="service selected" type="button" data-target="mock">Mock / Demo</button>
+      </div>
+
+      <form id="prompt-form">
+        <label for="prompt">Prompt</label>
+        <textarea id="prompt" placeholder="Skriv din prompt her..." required></textarea>
+        <div class="actions">
+          <span class="counter" id="counter">0 tegn</span>
+          <button class="send" id="send" type="submit">Send via Gateway</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card stream-response" id="stream-response" aria-live="polite">
+      <div class="stream-title">LLM response</div>
+      <div class="stream-text" id="response-text"></div>
+    </section>
+
+    <section class="card result" id="result" aria-live="polite"></section>
+
+    <details id="audit-details">
+      <summary>Audit log entry (til rapport)</summary>
+      <pre id="audit-json">{}</pre>
+    </details>
+  </main>
+
+  <script>
+    const promptInput = document.querySelector("#prompt");
+    const form = document.querySelector("#prompt-form");
+    const send = document.querySelector("#send");
+    const result = document.querySelector("#result");
+    const streamResponse = document.querySelector("#stream-response");
+    const responseText = document.querySelector("#response-text");
+    const counter = document.querySelector("#counter");
+    const health = document.querySelector("#health");
+    const auditJson = document.querySelector("#audit-json");
+    const serviceButtons = document.querySelectorAll("[data-target]");
+
+    const tokenByLabel = {
+      CPR_NUMBER: "[CPR-MASKERET]",
+      IBAN: "[IBAN-MASKERET]",
+      CREDIT_CARD: "[KREDITKORT-MASKERET]",
+      API_KEY: "[API-NØGLE-MASKERET]",
+      EMAIL: "[EMAIL-MASKERET]",
+      PERSON: "[NAVN-MASKERET]",
+      ORG: "[ORG-MASKERET]"
+    };
+
+    let selectedTarget = "mock";
+    let streamFailed = false;
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function updateCounter() {
+      counter.textContent = `${promptInput.value.length} tegn`;
+    }
+
+    function selectedModel() {
+      return selectedTarget === "gemini" ? "gemini-2.0-flash" : "gpt-4o-mini";
+    }
+
+    function setSelectedTarget(targetName) {
+      const allowedTargets = ["openai", "anthropic", "gemini", "mock"];
+      selectedTarget = allowedTargets.includes(targetName) ? targetName : "mock";
+      serviceButtons.forEach((button) => {
+        button.classList.toggle("selected", button.dataset.target === selectedTarget);
+      });
+    }
+
+    function setResult(type, html) {
+      result.className = `card result show ${type}`;
+      result.innerHTML = html;
+    }
+
+    function showEmptyStream() {
+      streamFailed = false;
+      responseText.textContent = "";
+      streamResponse.classList.add("show");
+      result.className = "card result";
+      result.innerHTML = "";
+    }
+
+    function hideStream() {
+      streamResponse.classList.remove("show");
+      responseText.textContent = "";
+    }
+
+    function appendStreamText(text) {
+      responseText.textContent += text;
+    }
+
+    function assistantText(body) {
+      const choice = (body.choices || [])[0] || {};
+      return choice.message?.content || "Ingen LLM-respons modtaget.";
+    }
+
+    function maskedTokens(gateway) {
+      if (gateway.masked_tokens && gateway.masked_tokens.length) {
+        return gateway.masked_tokens;
+      }
+      return (gateway.detected_entities || [])
+        .map((entity) => tokenByLabel[entity.label])
+        .filter(Boolean);
+    }
+
+    function tokenList(tokens) {
+      if (!tokens.length) {
+        return `<div class="token-list"><span class="token">Ingen tokens</span></div>`;
+      }
+      return `<div class="token-list">${tokens.map((token) => `<span class="token">${escapeHtml(token)}</span>`).join("")}</div>`;
+    }
+
+    async function latestAuditEntry(requestId) {
+      const response = await fetch("/audit");
+      const entries = await response.json();
+      return entries.find((entry) => entry.request_id === requestId) || entries.at(-1) || {};
+    }
+
+    async function showAudit(requestId) {
+      try {
+        const entry = await latestAuditEntry(requestId);
+        auditJson.textContent = JSON.stringify(entry, null, 2);
+      } catch {
+        auditJson.textContent = JSON.stringify({ error: "Audit kunne ikke hentes." }, null, 2);
+      }
+    }
+
+    function renderBlocked(body) {
+      setResult("block", `
+        <div class="result-head">
+          <h2>🔴 BLOKERET</h2>
+          <span class="pill">Request ${escapeHtml(body.request_id)}</span>
+        </div>
+        <div class="result-body">
+          <p><strong>Detekteret:</strong> ${escapeHtml(body.message)}</p>
+          <p>${escapeHtml(body.policy_reference)}</p>
+          <p>${escapeHtml(body.regulatory_basis)}</p>
+          <p>${escapeHtml(body.action_required)}</p>
+          <p><strong>request_id:</strong> ${escapeHtml(body.request_id)}</p>
+        </div>
+      `);
+      showAudit(body.request_id);
+    }
+
+    function renderStreamError(data) {
+      streamFailed = true;
+      hideStream();
+      setResult("block", `
+        <div class="result-head">
+          <h2>🔴 GEMINI-FEJL</h2>
+          <span class="pill">LLM API</span>
+        </div>
+        <div class="result-body">
+          <p>Gatewayen gennemførte DLP-kontrollen, men Gemini-kaldet fejlede.</p>
+          <p><strong>DLP-beslutning:</strong> ${escapeHtml(data.gateway?.policy_action || "-")} blev ikke vist som succes, fordi LLM-kaldet fejlede.</p>
+          <p>${escapeHtml(data.message || "Ukendt streaming-fejl.")}</p>
+        </div>
+      `);
+      auditJson.textContent = JSON.stringify(data.audit_entry || {}, null, 2);
+    }
+
+    function renderMasked(body) {
+      const gateway = body.gateway || {};
+      const tokens = maskedTokens(gateway);
+      setResult("mask", `
+        <div class="result-head">
+          <h2>🟡 MASKERET OG VIDERESENDT</h2>
+          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
+        </div>
+        <div class="result-body">
+          <p>Følsomme data er fjernet fra din prompt inden afsendelse.</p>
+          ${tokenList(tokens)}
+          <div class="llm-response">${escapeHtml(assistantText(body))}</div>
+        </div>
+      `);
+      showAudit(gateway.request_id);
+    }
+
+    function renderAllowed(body) {
+      const gateway = body.gateway || {};
+      setResult("allow", `
+        <div class="result-head">
+          <h2>🟢 VIDERESENDT UDEN ÆNDRINGER</h2>
+          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
+        </div>
+        <div class="result-body">
+          <p>Ingen følsomme data detekteret.</p>
+          <div class="llm-response">${escapeHtml(assistantText(body))}</div>
+        </div>
+      `);
+      showAudit(gateway.request_id);
+    }
+
+    function renderMaskedFinal(data) {
+      const gateway = data.gateway || {};
+      const tokens = maskedTokens(gateway);
+      setResult("mask", `
+        <div class="result-head">
+          <h2>🟡 MASKERET OG VIDERESENDT</h2>
+          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
+        </div>
+        <div class="result-body">
+          <p>Følsomme data er fjernet fra din prompt inden afsendelse.</p>
+          ${tokenList(tokens)}
+        </div>
+      `);
+      auditJson.textContent = JSON.stringify(data.audit_entry || {}, null, 2);
+    }
+
+    function renderAllowedFinal(data) {
+      const gateway = data.gateway || {};
+      setResult("allow", `
+        <div class="result-head">
+          <h2>🟢 VIDERESENDT UDEN ÆNDRINGER</h2>
+          <span class="pill">Regel ${escapeHtml(gateway.policy_rule_triggered || "-")}</span>
+        </div>
+        <div class="result-body">
+          <p>Ingen følsomme data detekteret.</p>
+        </div>
+      `);
+      auditJson.textContent = JSON.stringify(data.audit_entry || {}, null, 2);
+    }
+
+    async function readSseStream(response) {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) {
+          break;
+        }
+        buffer += decoder.decode(value, { stream: true });
+        buffer = buffer.replaceAll("\r\n", "\n");
+        buffer = processSseBuffer(buffer);
+      }
+      if (buffer.trim()) {
+        handleSsePacket(buffer);
+      }
+    }
+
+    function processSseBuffer(buffer) {
+      let boundary = buffer.indexOf("\n\n");
+      while (boundary !== -1) {
+        handleSsePacket(buffer.slice(0, boundary));
+        buffer = buffer.slice(boundary + 2);
+        boundary = buffer.indexOf("\n\n");
+      }
+      return buffer;
+    }
+
+    function handleSsePacket(packet) {
+      const lines = packet.replaceAll("\r\n", "\n").split("\n");
+      const event = eventName(lines);
+      const data = eventData(lines);
+      if (event === "chunk") {
+        appendStreamText(data.text || "");
+      } else if (event === "error") {
+        renderStreamError(data);
+      } else if (event === "done" && !streamFailed) {
+        renderFinalCard(data);
+      }
+    }
+
+    function eventName(lines) {
+      const line = lines.find((item) => item.startsWith("event:"));
+      return line ? line.slice(6).trim() : "message";
+    }
+
+    function eventData(lines) {
+      const data = lines
+        .filter((line) => line.startsWith("data:"))
+        .map((line) => line.slice(5).trimStart())
+        .join("\n");
+      try {
+        return JSON.parse(data || "{}");
+      } catch {
+        return {};
+      }
+    }
+
+    function renderFinalCard(data) {
+      if (data.gateway?.policy_action === "MASK_AND_FORWARD") {
+        renderMaskedFinal(data);
+      } else {
+        renderAllowedFinal(data);
+      }
+    }
+
+    async function loadHealth() {
+      try {
+        const response = await fetch("/health");
+        const body = await response.json();
+        health.textContent = `${body.status.toUpperCase()} · ${body.target_api} · demo=${body.demo_mode}`;
+        setSelectedTarget(body.target_api);
+      } catch {
+        health.textContent = "Gateway ikke tilgængelig";
+      }
+    }
+
+    serviceButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        setSelectedTarget(button.dataset.target);
+      });
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      send.disabled = true;
+      showEmptyStream();
+
+      const payload = {
+        messages: [{ role: "user", content: promptInput.value }],
+        model: selectedModel(),
+        target: selectedTarget
+      };
+
+      try {
+        const response = await fetch("/v1/chat/completions/stream", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (response.status === 403) {
+          const body = await response.json();
+          hideStream();
+          renderBlocked(body);
+        } else if (response.ok && response.body) {
+          await readSseStream(response);
+        } else {
+          throw new Error(await response.text());
+        }
+      } catch (error) {
+        hideStream();
+        setResult("block", `
+          <div class="result-head">
+            <h2>Fejl</h2>
+            <span class="pill">Gateway</span>
+          </div>
+          <div class="result-body"><p>${escapeHtml(error.message)}</p></div>
+        `);
+      } finally {
+        send.disabled = false;
+      }
+    });
+
+    promptInput.addEventListener("input", updateCounter);
+    updateCounter();
+    loadHealth();
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-"""Masking Module — implements privacy-preserving prompt transformation.
+"""Masking Module — adresserer Gap G1/G_KI1: dataminimering før LLM-kald.
 
 This component addresses the empirical need to reduce leakage risk by replacing
 sensitive values with Danish masking tokens before any prompt is forwarded to an
@@ -66,4 +66,3 @@ def _deduplicate_entities(entities: list[DetectedEntity]) -> list[DetectedEntity
         selected.append(entity)
         occupied_until = entity.end
     return selected
-

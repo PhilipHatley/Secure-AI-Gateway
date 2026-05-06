@@ -1,4 +1,4 @@
-"""Policy Engine — implements the thesis control rules for prompt handling.
+"""Policy Engine — adresserer Gap G3: forklarlig policy for LLM-risikobeslutning.
 
 The rule set translates DORA/NIS2-inspired organisational risk requirements into
 an explainable ALLOW, MASK_AND_FORWARD, or BLOCK decision for each prompt.
@@ -45,4 +45,3 @@ def _decision(action: str, reason: str, rule: int, reference: str) -> PolicyDeci
         triggered_rule=rule,
         aup_reference=reference,
     )
-

@@ -1,4 +1,4 @@
-"""Acceptable Use Policy — implements Danish user-facing governance messages.
+"""Acceptable Use Policy — adresserer Gap G6: dansk governance-feedback til brugeren.
 
 Blocked prompts receive a clear Danish explanation that ties the gateway's proxy
 control to organisational AI policy and the DORA/NIS2 third-party ICT risk basis.
@@ -56,4 +56,3 @@ def _blocked_entity_type(entity_labels: list[str]) -> str:
         if label in entity_labels:
             return ENTITY_NAMES[label]
     return ENTITY_NAMES.get(entity_labels[0], "fortrolige data") if entity_labels else "fortrolige data"
-

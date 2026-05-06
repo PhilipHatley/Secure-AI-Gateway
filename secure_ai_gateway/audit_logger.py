@@ -1,4 +1,4 @@
-"""Audit Trail — implements JSONL accountability without storing prompt secrets.
+"""Audit Trail — adresserer Gap G5: sporbarhed uden lagring af prompthemmeligheder.
 
 The audit log supports thesis demonstration of technical control and traceability
 while enforcing the data minimisation requirement: no original prompt text and no
@@ -73,4 +73,3 @@ def _parse_json_line(line: str) -> dict[str, Any]:
 def _timestamp() -> str:
     """Return a timezone-aware ISO 8601 timestamp."""
     return datetime.now(UTC).isoformat()
-
