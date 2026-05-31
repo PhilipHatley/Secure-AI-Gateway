@@ -1,6 +1,6 @@
 # Secure AI Gateway
 
-Secure AI Gateway er en Python proof-of-concept udviklet til et bachelorprojekt i IT-sikkerhed på KEA. Projektet undersøger, hvordan organisationer under DORA og NIS2 kan reducere risikoen for datalækage, når medarbejdere bruger eksternt hostede LLM-tjenester som ChatGPT, Claude og Gemini.
+Secure AI Gateway er en Python proof-of-concept udviklet til et bachelorprojekt i IT-sikkerhed på EK. Projektet undersøger, hvordan organisationer under DORA og NIS2 kan reducere risikoen for datalækage, når medarbejdere bruger eksternt hostede LLM-tjenester som ChatGPT, Claude og Gemini.
 
 Applikationen fungerer som en DLP-proxy mellem brugeren og en ekstern LLM API. Før en prompt sendes videre, bliver den analyseret for følsomme oplysninger, vurderet af en policy engine, eventuelt maskeret eller blokeret, og derefter logget i en sanitiseret audit-log.
 
