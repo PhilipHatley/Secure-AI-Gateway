@@ -4,6 +4,13 @@ Secure AI Gateway er en Python proof-of-concept udviklet til et bachelorprojekt 
 
 Applikationen fungerer som en DLP-proxy mellem brugeren og en ekstern LLM API. Før en prompt sendes videre, bliver den analyseret for følsomme oplysninger, vurderet af en policy engine, eventuelt maskeret eller blokeret, og derefter logget i en sanitiseret audit-log.
 
+## Udviklere
+
+Secure AI Gateway er udviklet som bachelorprodukt af:
+
+- Philip Hatley — [GitHub: PhilipHatley](https://github.com/PhilipHatley)
+- Martin Christensen — [GitHub: martinthuren](https://github.com/martinthuren)
+
 ## Formål
 
 Projektet demonstrerer en teknisk kontrol, som kan placeres mellem interne brugere og eksterne AI-tjenester. Gatewayen er bygget til at understøtte thesis-argumentet om, at en proxy-arkitektur kan bruges som en praktisk kontrol mod OWASP LLM02-risici og som led i styring af IKT-tredjepartsrisiko under DORA artikel 28 og NIS2 artikel 21.

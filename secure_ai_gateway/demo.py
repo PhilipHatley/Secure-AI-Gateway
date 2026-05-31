@@ -1,9 +1,4 @@
-"""Demo Script — adresserer Gap G7: reproducerbare testscenarier til evaluering.
-
-The script demonstrates the proxy control outcomes for CPR blocking, business
-data masking, and neutral prompt forwarding, matching the bachelor thesis test
-scenarios without requiring any external LLM API key.
-"""
+"""Demo Script — adresserer Gap G7: reproducerbare testscenarier til evaluering."""
 
 from __future__ import annotations
 
@@ -20,8 +15,6 @@ from .policy_engine import PolicyDecision, decide_policy
 
 @dataclass(frozen=True)
 class Scenario:
-    """One thesis demo scenario."""
-
     title: str
     expected: str
     prompt: str
@@ -53,7 +46,6 @@ SCENARIOS = (
 
 
 def main() -> None:
-    """Run all three thesis scenarios and print screenshot-friendly output."""
     print("SECURE AI GATEWAY — DEMO")
     print("=" * 80)
     for scenario in SCENARIOS:
@@ -61,7 +53,6 @@ def main() -> None:
 
 
 def _run_scenario(scenario: Scenario) -> None:
-    """Run one scenario through DLP, policy, masking, and audit logging."""
     request_id = str(uuid4())
     result = analyze_prompt(scenario.prompt)
     decision = decide_policy(result)
@@ -73,14 +64,12 @@ def _run_scenario(scenario: Scenario) -> None:
 
 
 def _mask_if_needed(prompt: str, result: DLPResult, decision: PolicyDecision) -> MaskingResult | None:
-    """Mask prompt content only when policy requires forwarding with masking."""
     if decision.action != "MASK_AND_FORWARD":
         return None
     return mask_text(prompt, result.detected_entities)
 
 
 def _forwarded_prompt(prompt: str, decision: PolicyDecision, masking: MaskingResult | None) -> str:
-    """Return what would be sent to the LLM in demo mode."""
     if decision.action == "BLOCK":
         return "INTET — prompten blev blokeret og ikke videresendt."
     if masking is not None:
@@ -95,7 +84,6 @@ def _audit_scenario(
     decision: PolicyDecision,
     masking: MaskingResult | None,
 ) -> dict[str, object]:
-    """Write and return the sanitized audit entry for one scenario."""
     settings = get_settings()
     entry = build_audit_entry(
         request_id=request_id,
@@ -117,7 +105,6 @@ def _print_scenario(
     forwarded: str,
     audit_entry: dict[str, object],
 ) -> None:
-    """Print one scenario in a thesis-friendly format."""
     print(f"\n{scenario.title}")
     print("-" * 80)
     print(f"Forventet beslutning: {scenario.expected}")
@@ -130,7 +117,6 @@ def _print_scenario(
 
 
 def _dlp_summary(result: DLPResult) -> dict[str, object]:
-    """Build a printable DLP summary without raw entity values."""
     return {
         "risk_level": result.risk_level,
         "detected_entities": [

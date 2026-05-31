@@ -1,9 +1,4 @@
-"""DLP Pipeline — adresserer Gap G1/G_KI1: teknologiagnostisk DLP-kontrol.
-
-The pipeline operationalises the thesis feature set by combining deterministic
-regex detection for high-risk identifiers with spaCy NER for names,
-organisations, and locations before a policy decision is made.
-"""
+"""DLP Pipeline — adresserer Gap G1/G_KI1: regex- og NER-kontrol af prompts."""
 
 from __future__ import annotations
 
@@ -20,8 +15,6 @@ NER_LABEL_MAP = {"PER": "PERSON", "PERSON": "PERSON", "ORG": "ORG"}
 
 @dataclass(frozen=True)
 class DetectedEntity:
-    """A sensitive or low-risk entity found in a prompt."""
-
     label: str
     value: str
     start: int
@@ -31,8 +24,6 @@ class DetectedEntity:
 
 @dataclass(frozen=True)
 class DLPResult:
-    """The complete DLP result passed to the policy engine."""
-
     detected_entities: list[DetectedEntity]
     risk_level: str
 
@@ -47,7 +38,6 @@ REGEX_PATTERNS: tuple[re.Pattern[str], ...] = (
 
 
 def analyze_prompt(prompt: str) -> DLPResult:
-    """Run regex detection first, then NER, and return the risk result."""
     entities = detect_regex_entities(prompt)
     entities.extend(detect_ner_entities(prompt))
     entities = _sort_entities(entities)
@@ -55,7 +45,6 @@ def analyze_prompt(prompt: str) -> DLPResult:
 
 
 def detect_regex_entities(prompt: str) -> list[DetectedEntity]:
-    """Detect deterministic sensitive-data patterns using named regex groups."""
     entities: list[DetectedEntity] = []
     for pattern in REGEX_PATTERNS:
         entities.extend(_entities_from_pattern(pattern, prompt))
@@ -63,7 +52,6 @@ def detect_regex_entities(prompt: str) -> list[DetectedEntity]:
 
 
 def _entities_from_pattern(pattern: re.Pattern[str], prompt: str) -> list[DetectedEntity]:
-    """Convert regex matches into DetectedEntity objects."""
     entities: list[DetectedEntity] = []
     for match in pattern.finditer(prompt):
         label = match.lastgroup
@@ -77,7 +65,6 @@ def _entities_from_pattern(pattern: re.Pattern[str], prompt: str) -> list[Detect
 
 @lru_cache(maxsize=1)
 def _load_spacy_model() -> Any | None:
-    """Load Danish NER with English fallback; return None if unavailable."""
     try:
         import spacy
     except ImportError:
@@ -92,7 +79,6 @@ def _load_spacy_model() -> Any | None:
 
 
 def detect_ner_entities(prompt: str) -> list[DetectedEntity]:
-    """Detect PERSON, ORG, and GPE entities via spaCy when a model is installed."""
     nlp = _load_spacy_model()
     if nlp is None:
         return []
@@ -100,7 +86,6 @@ def detect_ner_entities(prompt: str) -> list[DetectedEntity]:
 
 
 def _entity_from_spacy(ent: Any) -> DetectedEntity:
-    """Map a spaCy entity into the gateway's canonical labels."""
     return DetectedEntity(
         label=_normalise_ner_label(ent.label_),
         value=ent.text,
@@ -111,12 +96,10 @@ def _entity_from_spacy(ent: Any) -> DetectedEntity:
 
 
 def _normalise_ner_label(label: str) -> str:
-    """Normalise Danish and English spaCy entity labels."""
     return NER_LABEL_MAP.get(label, "")
 
 
 def _risk_level(entities: list[DetectedEntity]) -> str:
-    """Calculate risk, leaving GPE-only detections as ALLOW by default."""
     labels = {entity.label for entity in entities}
     if labels & HIGH_RISK_LABELS:
         return "HIGH"
@@ -126,5 +109,4 @@ def _risk_level(entities: list[DetectedEntity]) -> str:
 
 
 def _sort_entities(entities: list[DetectedEntity]) -> list[DetectedEntity]:
-    """Sort entities by prompt position to keep demo output stable."""
     return sorted(entities, key=lambda entity: (entity.start, entity.end, entity.label))

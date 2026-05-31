@@ -1,9 +1,4 @@
-"""Configuration — adresserer Gap G4: miljøstyret og reproducerbar PoC-drift.
-
-This module centralises environment-driven configuration for the DORA/NIS2
-proxy proof-of-concept, keeping API keys, target provider selection, logging,
-and demo behaviour outside the business logic.
-"""
+"""Configuration — adresserer Gap G4: miljøstyret og reproducerbar PoC-drift."""
 
 from __future__ import annotations
 
@@ -21,14 +16,12 @@ if load_dotenv is not None:
 
 
 def _bool_from_env(value: str | None, default: bool) -> bool:
-    """Parse common environment boolean values."""
     if value is None:
         return default
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _int_from_env(value: str | None, default: int) -> int:
-    """Parse an integer environment value with a safe fallback."""
     if value is None:
         return default
     try:
@@ -39,8 +32,6 @@ def _int_from_env(value: str | None, default: int) -> int:
 
 @dataclass(frozen=True)
 class Settings:
-    """Runtime settings loaded from environment variables."""
-
     openai_api_key: str | None
     anthropic_api_key: str | None
     gemini_api_key: str | None
@@ -52,7 +43,6 @@ class Settings:
 
     @classmethod
     def from_env(cls) -> "Settings":
-        """Create a Settings object from environment variables."""
         gemini_api_key = os.getenv("GEMINI_API_KEY")
         target_api = _target_api_from_env(os.getenv("TARGET_API"), gemini_api_key)
         return cls(
@@ -68,7 +58,6 @@ class Settings:
 
     @property
     def target_endpoint(self) -> str:
-        """Return the provider endpoint used in audit metadata."""
         endpoints = {
             "openai": "https://api.openai.com/v1/chat/completions",
             "anthropic": "https://api.anthropic.com/v1/messages",
@@ -79,19 +68,16 @@ class Settings:
 
 
 def _target_api_from_env(value: str | None, gemini_api_key: str | None) -> str:
-    """Default to Gemini when a Gemini key is configured."""
     if value:
         return value.strip().lower()
     return "gemini" if gemini_api_key else "mock"
 
 
 def _default_model(target_api: str) -> str:
-    """Return a sensible default model for the selected target."""
     if target_api == "gemini":
         return "gemini-2.0-flash"
     return "gpt-4o-mini"
 
 
 def get_settings() -> Settings:
-    """Load current settings without caching, which helps demos change env vars."""
     return Settings.from_env()

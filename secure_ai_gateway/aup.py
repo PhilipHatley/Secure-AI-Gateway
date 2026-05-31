@@ -1,8 +1,4 @@
-"""Acceptable Use Policy — adresserer Gap G6: dansk governance-feedback til brugeren.
-
-Blocked prompts receive a clear Danish explanation that ties the gateway's proxy
-control to organisational AI policy and the DORA/NIS2 third-party ICT risk basis.
-"""
+"""Acceptable Use Policy — adresserer Gap G6: dansk feedback ved blokering."""
 
 from __future__ import annotations
 
@@ -33,7 +29,6 @@ ENTITY_NAMES = {
 
 
 def blocked_message(entity_labels: list[str], request_id: str) -> dict[str, str | bool]:
-    """Build the Danish AUP response body for blocked prompts."""
     entity_type = _blocked_entity_type(entity_labels)
     return {
         "blocked": True,
@@ -46,12 +41,10 @@ def blocked_message(entity_labels: list[str], request_id: str) -> dict[str, str 
 
 
 def warning_header_value() -> str:
-    """Return the Danish warning header for masked prompts."""
     return "Følsomme data maskeret. Se IT-sikkerhedspolitik."
 
 
 def _blocked_entity_type(entity_labels: list[str]) -> str:
-    """Prefer the entity type that caused a BLOCK decision."""
     for label in ("CPR_NUMBER", "IBAN", "API_KEY"):
         if label in entity_labels:
             return ENTITY_NAMES[label]

@@ -1,8 +1,4 @@
-"""Policy Engine — adresserer Gap G3: forklarlig policy for LLM-risikobeslutning.
-
-The rule set translates DORA/NIS2-inspired organisational risk requirements into
-an explainable ALLOW, MASK_AND_FORWARD, or BLOCK decision for each prompt.
-"""
+"""Policy Engine — adresserer Gap G3: forklarlig risikobeslutning for prompts."""
 
 from __future__ import annotations
 
@@ -13,8 +9,6 @@ from .dlp_pipeline import DLPResult
 
 @dataclass(frozen=True)
 class PolicyDecision:
-    """Policy result consumed by the gateway and audit trail."""
-
     action: str
     reason: str
     triggered_rule: int
@@ -22,7 +16,6 @@ class PolicyDecision:
 
 
 def decide_policy(result: DLPResult) -> PolicyDecision:
-    """Evaluate policy rules in priority order."""
     labels = {entity.label for entity in result.detected_entities}
 
     if result.risk_level == "HIGH" and labels & {"CPR_NUMBER", "IBAN"}:
@@ -38,7 +31,6 @@ def decide_policy(result: DLPResult) -> PolicyDecision:
 
 
 def _decision(action: str, reason: str, rule: int, reference: str) -> PolicyDecision:
-    """Create a PolicyDecision object."""
     return PolicyDecision(
         action=action,
         reason=reason,

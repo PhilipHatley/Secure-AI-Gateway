@@ -1,9 +1,4 @@
-"""Audit Trail — adresserer Gap G5: sporbarhed uden lagring af prompthemmeligheder.
-
-The audit log supports thesis demonstration of technical control and traceability
-while enforcing the data minimisation requirement: no original prompt text and no
-original sensitive values are written to disk.
-"""
+"""Audit Trail — adresserer Gap G5: sporbarhed uden promptindhold i loggen."""
 
 from __future__ import annotations
 
@@ -25,7 +20,6 @@ def build_audit_entry(
     policy_decision: PolicyDecision,
     forwarded_to_llm: bool,
 ) -> dict[str, Any]:
-    """Build a sanitized audit entry that contains metadata only."""
     return {
         "timestamp": _timestamp(),
         "request_id": request_id,
@@ -41,7 +35,6 @@ def build_audit_entry(
 
 
 def log_interaction(entry: dict[str, Any], log_file: str) -> None:
-    """Append one JSON object to the audit log."""
     log_path = Path(log_file)
     log_path.parent.mkdir(parents=True, exist_ok=True) if log_path.parent != Path(".") else None
     with log_path.open("a", encoding="utf-8") as file:
@@ -49,7 +42,6 @@ def log_interaction(entry: dict[str, Any], log_file: str) -> None:
 
 
 def read_last_entries(log_file: str, limit: int = 20) -> list[dict[str, Any]]:
-    """Read the latest JSONL audit entries for the demo endpoint."""
     log_path = Path(log_file)
     if not log_path.exists():
         return []
@@ -58,12 +50,10 @@ def read_last_entries(log_file: str, limit: int = 20) -> list[dict[str, Any]]:
 
 
 def _entity_metadata(entities: list[DetectedEntity]) -> list[dict[str, str]]:
-    """Return entity labels and detection stages only."""
     return [{"label": entity.label, "stage": entity.stage} for entity in entities]
 
 
 def _parse_json_line(line: str) -> dict[str, Any]:
-    """Parse one audit line and tolerate malformed historic entries."""
     try:
         return json.loads(line)
     except json.JSONDecodeError:
@@ -71,5 +61,4 @@ def _parse_json_line(line: str) -> dict[str, Any]:
 
 
 def _timestamp() -> str:
-    """Return a timezone-aware ISO 8601 timestamp."""
     return datetime.now(UTC).isoformat()

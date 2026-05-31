@@ -1,9 +1,4 @@
-"""FastAPI Gateway — adresserer Gap G2: manglende kontrolleret LLM-proxy.
-
-The app exposes an OpenAI-compatible HTTP endpoint that scans prompts before
-forwarding them, supporting the OWASP LLM02 and DORA Art. 28 argument for a
-technical third-party LLM risk control.
-"""
+"""FastAPI Gateway — adresserer Gap G2: kontrolleret proxy for LLM-trafik."""
 
 from __future__ import annotations
 
@@ -32,27 +27,23 @@ app = FastAPI(title="Secure AI Gateway", version="0.1.0")
 
 @app.get("/", response_class=HTMLResponse)
 async def index() -> HTMLResponse:
-    """Serve the single-page demonstration UI."""
     template = Path(__file__).resolve().parent / "templates" / "index.html"
     return HTMLResponse(template.read_text(encoding="utf-8"))
 
 
 @app.get("/health")
 async def health() -> dict[str, str | bool]:
-    """Return gateway status for operational checks."""
     settings = get_settings()
     return {"status": "ok", "target_api": settings.target_api, "demo_mode": settings.demo_mode}
 
 
 @app.get("/audit")
 async def audit() -> list[dict[str, Any]]:
-    """Return the last 20 sanitized audit entries for demo purposes."""
     return read_last_entries(get_settings().log_file, limit=20)
 
 
 @app.post("/v1/chat/completions")
 async def chat_completions(request: Request) -> JSONResponse:
-    """Scan, decide, audit, and optionally forward an OpenAI-style request."""
     payload = await _read_json_payload(request)
     settings = _settings_for_payload(payload, get_settings())
     request_id = str(uuid4())
@@ -76,7 +67,6 @@ async def chat_completions(request: Request) -> JSONResponse:
 
 @app.post("/v1/chat/completions/stream")
 async def chat_completions_stream(request: Request) -> Response:
-    """Scan first, then stream allowed Gemini-compatible responses as SSE."""
     payload = await _read_json_payload(request)
     settings = _settings_for_payload(payload, get_settings())
     request_id = str(uuid4())
@@ -98,7 +88,6 @@ async def chat_completions_stream(request: Request) -> Response:
 
 
 async def _read_json_payload(request: Request) -> dict[str, Any]:
-    """Read JSON, tolerating Windows-encoded demo clients when needed."""
     try:
         return await request.json()
     except UnicodeDecodeError:
@@ -109,7 +98,6 @@ async def _read_json_payload(request: Request) -> dict[str, Any]:
 
 
 def _extract_last_user_content(payload: dict[str, Any]) -> str:
-    """Extract the latest user message from an OpenAI-compatible body."""
     messages = payload.get("messages", [])
     for message in reversed(messages):
         if message.get("role") == "user":
@@ -118,7 +106,6 @@ def _extract_last_user_content(payload: dict[str, Any]) -> str:
 
 
 def _settings_for_payload(payload: dict[str, Any], settings: Settings) -> Settings:
-    """Apply the optional request-level target override."""
     target = str(payload.get("target") or settings.target_api).strip().lower()
     if target not in {"openai", "anthropic", "gemini", "mock"}:
         raise HTTPException(status_code=400, detail="target must be openai, anthropic, gemini, or mock.")
@@ -126,7 +113,6 @@ def _settings_for_payload(payload: dict[str, Any], settings: Settings) -> Settin
 
 
 def _validate_streaming_settings(settings: Settings) -> None:
-    """Validate that the streaming endpoint can reach Gemini or demo mode."""
     if settings.demo_mode or settings.target_api == "mock":
         return
     if not settings.gemini_api_key:
@@ -134,14 +120,12 @@ def _validate_streaming_settings(settings: Settings) -> None:
 
 
 def _streaming_settings(settings: Settings) -> Settings:
-    """Use Gemini for live streaming, while preserving demo/mock streaming."""
     if settings.demo_mode or settings.target_api == "mock":
         return settings
     return replace(settings, target_api="gemini", target_model="gemini-2.0-flash")
 
 
 def _maybe_mask(prompt: str, result: DLPResult, decision: PolicyDecision) -> MaskingResult | None:
-    """Run masking only when the policy decision requires it."""
     if decision.action != "MASK_AND_FORWARD":
         return None
     return mask_text(prompt, result.detected_entities)
@@ -150,7 +134,6 @@ def _maybe_mask(prompt: str, result: DLPResult, decision: PolicyDecision) -> Mas
 def _payload_for_forwarding(
     payload: dict[str, Any], masking: MaskingResult | None, settings: Settings
 ) -> dict[str, Any]:
-    """Return a copy of the request with the last user message masked if needed."""
     forwarded = deepcopy(payload)
     forwarded.pop("target", None)
     forwarded["model"] = _model_for_target(forwarded, settings)
@@ -172,7 +155,6 @@ async def _forward_with_audit(
     masking: MaskingResult | None,
     payload: dict[str, Any],
 ) -> dict[str, Any]:
-    """Forward the sanitized request and always write a sanitized audit entry."""
     try:
         response = await _forward_to_llm(payload, settings)
         _write_audit(request_id, settings, prompt, result, decision, masking, True)
@@ -184,7 +166,6 @@ async def _forward_with_audit(
 
 
 async def _forward_to_llm(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Forward to the configured provider or return a canned demo response."""
     if settings.demo_mode or settings.target_api == "mock":
         return _demo_response(payload, settings)
     if settings.target_api == "openai":
@@ -205,7 +186,6 @@ async def _sse_stream(
     masking: MaskingResult | None,
     payload: dict[str, Any],
 ) -> AsyncIterator[str]:
-    """Yield text chunks followed by final DLP metadata."""
     try:
         async for text in _llm_text_stream(payload, settings):
             yield _sse_event("chunk", {"text": text})
@@ -220,7 +200,6 @@ async def _sse_stream(
 
 
 async def _llm_text_stream(payload: dict[str, Any], settings: Settings) -> AsyncIterator[str]:
-    """Stream demo chunks or Gemini chunks."""
     if settings.demo_mode or settings.target_api == "mock":
         async for text in _demo_text_stream(settings):
             yield text
@@ -230,7 +209,6 @@ async def _llm_text_stream(payload: dict[str, Any], settings: Settings) -> Async
 
 
 async def _demo_text_stream(settings: Settings) -> AsyncIterator[str]:
-    """Stream a short demo response in small chunks."""
     text = f"[DEMO] Gateway streamer et Gemini-svar til {settings.target_api}."
     for chunk in text.split(" "):
         yield f"{chunk} "
@@ -238,7 +216,6 @@ async def _demo_text_stream(settings: Settings) -> AsyncIterator[str]:
 
 
 async def _gemini_text_stream(payload: dict[str, Any], settings: Settings) -> AsyncIterator[str]:
-    """Stream Gemini's OpenAI-compatible SSE chunks."""
     stream_payload = {**payload, "stream": True, "model": "gemini-2.0-flash"}
     headers = {"Authorization": f"Bearer {settings.gemini_api_key}"}
     async with httpx.AsyncClient(timeout=90) as client:
@@ -251,7 +228,6 @@ async def _gemini_text_stream(payload: dict[str, Any], settings: Settings) -> As
 
 
 async def _raise_for_stream_error(response: httpx.Response) -> None:
-    """Convert provider stream errors into a readable exception."""
     if response.status_code < 400:
         return
     body = (await response.aread()).decode("utf-8", errors="replace")
@@ -259,7 +235,6 @@ async def _raise_for_stream_error(response: httpx.Response) -> None:
 
 
 def _text_from_stream_line(line: str) -> str:
-    """Extract an OpenAI-compatible text delta from one SSE data line."""
     if not line.startswith("data: "):
         return ""
     data = line.removeprefix("data: ").strip()
@@ -269,7 +244,6 @@ def _text_from_stream_line(line: str) -> str:
 
 
 def _text_from_stream_payload(data: str) -> str:
-    """Parse provider stream JSON and return only text deltas."""
     try:
         chunk = json.loads(data)
     except json.JSONDecodeError:
@@ -281,7 +255,6 @@ def _text_from_stream_payload(data: str) -> str:
 
 
 async def _call_openai(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Forward the request to OpenAI's chat completions API."""
     if not settings.openai_api_key:
         raise HTTPException(status_code=500, detail="OPENAI_API_KEY is not configured.")
     headers = {"Authorization": f"Bearer {settings.openai_api_key}"}
@@ -291,7 +264,6 @@ async def _call_openai(payload: dict[str, Any], settings: Settings) -> dict[str,
 
 
 async def _call_gemini(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Forward to Gemini through Google's OpenAI-compatible endpoint."""
     if not settings.gemini_api_key:
         raise HTTPException(status_code=500, detail="GEMINI_API_KEY is not configured.")
     headers = {"Authorization": f"Bearer {settings.gemini_api_key}"}
@@ -301,7 +273,6 @@ async def _call_gemini(payload: dict[str, Any], settings: Settings) -> dict[str,
 
 
 async def _call_anthropic(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Forward the request to Anthropic's messages API with a minimal conversion."""
     if not settings.anthropic_api_key:
         raise HTTPException(status_code=500, detail="ANTHROPIC_API_KEY is not configured.")
     anthropic_payload = _anthropic_payload(payload, settings)
@@ -312,7 +283,6 @@ async def _call_anthropic(payload: dict[str, Any], settings: Settings) -> dict[s
 
 
 def _anthropic_payload(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Convert the OpenAI-style body into Anthropic's basic messages shape."""
     return {
         "model": _model_for_target(payload, settings),
         "max_tokens": payload.get("max_tokens", 512),
@@ -321,21 +291,18 @@ def _anthropic_payload(payload: dict[str, Any], settings: Settings) -> dict[str,
 
 
 def _model_for_target(payload: dict[str, Any], settings: Settings) -> str:
-    """Return the outgoing model name for the selected target."""
     if settings.target_api == "gemini":
         return "gemini-2.0-flash"
     return payload.get("model") or settings.target_model
 
 
 def _checked_json_response(response: httpx.Response) -> dict[str, Any]:
-    """Return provider JSON or convert provider errors into gateway errors."""
     if response.status_code >= 400:
         raise HTTPException(status_code=response.status_code, detail=response.text)
     return response.json()
 
 
 def _demo_response(payload: dict[str, Any], settings: Settings) -> dict[str, Any]:
-    """Return an OpenAI-compatible canned response for offline demonstrations."""
     return {
         "choices": [
             {
@@ -358,7 +325,6 @@ def _gateway_metadata(
     masking: MaskingResult | None,
     settings: Settings,
 ) -> dict[str, Any]:
-    """Build sanitized response metadata for the demo UI."""
     return {
         "request_id": request_id,
         "target_api": settings.target_api,
@@ -371,14 +337,12 @@ def _gateway_metadata(
 
 
 def _response_headers(decision: PolicyDecision) -> dict[str, str]:
-    """Return response headers for the policy action."""
     if decision.action == "MASK_AND_FORWARD":
         return {"X-DLP-Warning": warning_header_value()}
     return {}
 
 
 def _stream_headers(decision: PolicyDecision) -> dict[str, str]:
-    """Return headers for SSE responses."""
     headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
     if decision.action == "MASK_AND_FORWARD":
         headers["X-DLP-Warning"] = "Sensitive data masked. See security policy."
@@ -386,7 +350,6 @@ def _stream_headers(decision: PolicyDecision) -> dict[str, str]:
 
 
 def _sse_event(event: str, data: dict[str, Any]) -> str:
-    """Format one Server-Sent Event."""
     payload = json.dumps(data, ensure_ascii=False)
     return f"event: {event}\ndata: {payload}\n\n"
 
@@ -400,7 +363,6 @@ def _write_audit(
     masking: MaskingResult | None,
     forwarded: bool,
 ) -> dict[str, Any]:
-    """Write a sanitized audit entry for every gateway interaction."""
     entry = build_audit_entry(
         request_id=request_id,
         target_api=settings.target_api,
