@@ -1,4 +1,4 @@
-"""FastAPI Gateway — adresserer Gap G2: kontrolleret proxy for LLM-trafik."""
+"""FastAPI Gateway — adresserer G1/G_KI1: kontrolleret proxy for LLM-trafik."""
 
 from __future__ import annotations
 

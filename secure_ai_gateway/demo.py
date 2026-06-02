@@ -1,4 +1,4 @@
-"""Demo Script — adresserer Gap G7: reproducerbare testscenarier til evaluering."""
+"""Demo Script — reproducerbare testscenarier til evaluering af gatewayen."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Audit Trail — adresserer Gap G5: sporbarhed uden promptindhold i loggen."""
+"""Audit Trail — adresserer G2/G_KI2: sporbarhed uden promptindhold i loggen."""
 
 from __future__ import annotations
 

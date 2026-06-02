@@ -1,4 +1,4 @@
-"""Configuration — adresserer Gap G4: miljøstyret og reproducerbar PoC-drift."""
+"""Configuration — miljøstyret og reproducerbar PoC-drift."""
 
 from __future__ import annotations
 

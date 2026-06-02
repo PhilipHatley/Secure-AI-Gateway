@@ -1,4 +1,4 @@
-"""Acceptable Use Policy — adresserer Gap G6: dansk feedback ved blokering."""
+"""Acceptable Use Policy — adresserer G5/G_KI5: dansk policy-feedback ved blokering."""
 
 from __future__ import annotations
 

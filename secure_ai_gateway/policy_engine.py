@@ -1,4 +1,4 @@
-"""Policy Engine — adresserer Gap G3: forklarlig risikobeslutning for prompts."""
+"""Policy Engine — omsætter konsoliderede krav til forklarlige promptbeslutninger."""
 
 from __future__ import annotations
 
